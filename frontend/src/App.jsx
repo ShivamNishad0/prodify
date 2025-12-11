@@ -14,7 +14,6 @@ import Support from "./components/Support";
 import Settings from "./components/Settings";
 import Notifications from "./components/Notifications";
 import Messages from "./components/Messages";
-import Logout from "./components/Logout";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -46,7 +45,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="notification" element={<Notifications />} />
           <Route path="messages" element={<Messages />} />
-          <Route path="logout" element={<Logout />} />
+
 
         </Route>
       </Routes>

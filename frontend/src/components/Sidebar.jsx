@@ -17,7 +17,6 @@ function Sidebar({ isOpen }) {
         { name: "Analytics", icon: <FaChartLine />, path: "/analytics" },
         { name: "Support", icon: <FaQuestionCircle />, path: "/support" },
         { name: "Settings", icon: <FaCog />, path: "/settings" },
-        { name: "Logout", icon: <MdLogout />, path: "/logout" },
     ];
 
     const sideBarStyle = {
