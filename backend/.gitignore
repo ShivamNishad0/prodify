@@ -13,4 +13,4 @@ dist-ssr
 *.local
 build
 TODO.md
-.env
+../.env
