@@ -52,9 +52,11 @@ app.use('/api/orders', require('./routes/orders'));
 
 app.use('/api/inventory', require('./routes/inventory'));
 
+
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/notes', require('./routes/notes'));
 
 // Basic health check route
 app.get('/', (req, res) => {

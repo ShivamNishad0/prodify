@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
+
 import Homepage from "./components/Homepage";
 import Products from "./components/Products";
 import Inventory from "./components/Inventory";
@@ -13,6 +14,7 @@ import Support from "./components/Support";
 import Settings from "./components/Settings";
 import Notifications from "./components/Notifications";
 import Messages from "./components/Messages";
+import Notes from "./components/Notes";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -43,8 +45,10 @@ function App() {
             <Route path="analytics" element={<Analytics />} />
             <Route path="support" element={<Support />} />
             <Route path="settings" element={<Settings />} />
+
             <Route path="notification" element={<Notifications />} />
             <Route path="messages" element={<Messages />} />
+            <Route path="notes" element={<Notes />} />
             <Route path="about" element={<About />} />
           </Route>
         </Routes>
