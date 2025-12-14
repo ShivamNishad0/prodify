@@ -4,7 +4,7 @@ A comprehensive Customer Relationship Management (CRM) system built with React a
 
 ![Welcome Page](asset/img/Welcome_Page.png)
 
-## 🚀 Features
+## Features
 
 ### Core Functionality
 - **User Authentication & Authorization** - Secure JWT-based authentication
@@ -21,7 +21,7 @@ A comprehensive Customer Relationship Management (CRM) system built with React a
 - **Settings** - Customizable system preferences
 - **Support** - Help and support resources
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19** - Modern React with hooks and functional components
@@ -37,7 +37,7 @@ A comprehensive Customer Relationship Management (CRM) system built with React a
 - **JWT** - JSON Web Tokens for authentication
 - **bcryptjs** - Password hashing and validation
 
-## 📸 Screenshots
+## Screenshots
 
 ### Welcome Page
 ![Welcome Page](asset/img/Welcome_Page.png)
@@ -59,7 +59,7 @@ A comprehensive Customer Relationship Management (CRM) system built with React a
 ![Sidebar](asset/img/Sidebar.png)
 *Intuitive navigation menu with all CRM modules*
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 - **Node.js** (v16 or higher)
@@ -96,7 +96,7 @@ Before you begin, ensure you have the following installed:
    PORT=5000
    ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Development Mode
 
@@ -128,7 +128,7 @@ Before you begin, ensure you have the following installed:
    npm start
    ```
 
-## 📚 API Documentation
+## API Documentation
 
 For detailed API documentation, see the [Backend README](./backend/README.md)
 
@@ -144,7 +144,7 @@ For detailed API documentation, see the [Backend README](./backend/README.md)
 - `GET /api/orders` - List all orders
 - `GET /api/analytics/dashboard` - Dashboard analytics
 
-## 🏗 Project Structure
+## Project Structure
 
 ```
 prodify-crm/
@@ -166,7 +166,7 @@ prodify-crm/
 └── README.md               # This file
 ```
 
-## 🔐 Authentication
+## Authentication
 
 The system uses JWT-based authentication. After successful login, you'll receive a token that must be included in subsequent requests:
 
@@ -176,7 +176,7 @@ headers: {
 }
 ```
 
-## 🧪 Testing
+## Testing
 
 Run the test suites:
 
@@ -190,7 +190,7 @@ cd frontend
 npm test
 ```
 
-## 📦 Deployment
+## Deployment
 
 ### Frontend Deployment
 The frontend can be deployed to any static hosting service:
@@ -209,7 +209,7 @@ npm start
 
 Ensure environment variables are properly configured in your hosting environment.
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -217,7 +217,7 @@ Ensure environment variables are properly configured in your hosting environment
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
@@ -225,14 +225,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - **Prodify Development Team** - *Initial work* - [Prodify](https://prodify.com)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - MongoDB for the robust database solution
 - React team for the excellent frontend framework
 - Express.js community for the web framework
 - All contributors who have helped improve this project
 
-## 📞 Support
+## Support
 
 For support and questions:
 - Create an issue in the repository
@@ -241,4 +241,4 @@ For support and questions:
 
 ---
 
-**Happy CRM Management! 🚀**
+**Happy CRM Management! **
