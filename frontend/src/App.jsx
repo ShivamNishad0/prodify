@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -20,37 +19,37 @@ import Signup from "./components/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Rightsidebar from "./components/Rightsidebar";
+import About from "./components/About";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-        {/* PUBLIC ROUTES */}
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-
-        {/* PROTECTED ROUTES */}
-        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route index element={<Homepage />} />
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="customers" element={<Customers />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="support" element={<Support />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="notification" element={<Notifications />} />
-          <Route path="messages" element={<Messages />} />
-
-
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </AuthProvider>
+          {/* PUBLIC ROUTES */}
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        
+          {/* PROTECTED ROUTES */}
+          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+            <Route index element={<Homepage />} />
+            <Route path="inventory" element={<Inventory />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="products" element={<Products />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="customers" element={<Customers />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="support" element={<Support />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="notification" element={<Notifications />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="about" element={<About />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

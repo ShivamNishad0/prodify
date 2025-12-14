@@ -1,11 +1,12 @@
+
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaBox, FaListAlt, FaShoppingCart, FaUsers, FaChartLine, FaCog, FaQuestionCircle } from "react-icons/fa";
-import { MdLogout } from "react-icons/md";
+import { FaHome, FaBox, FaListAlt, FaShoppingCart, FaUsers, FaChartLine, FaCog, FaQuestionCircle, FaInfoCircle } from "react-icons/fa";
 import { useState } from "react";
 
 function Sidebar({ isOpen }) {
     const navigate = useNavigate();
     const [hoveredItem, setHoveredItem] = useState(null);
+
 
     const menuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/" },
@@ -15,6 +16,7 @@ function Sidebar({ isOpen }) {
         { name: "Customers", icon: <FaUsers />, path: "/customers" },
         { name: "Reports", icon: <FaChartLine />, path: "/reports" },
         { name: "Analytics", icon: <FaChartLine />, path: "/analytics" },
+        { name: "About", icon: <FaInfoCircle />, path: "/about" },
         { name: "Support", icon: <FaQuestionCircle />, path: "/support" },
         { name: "Settings", icon: <FaCog />, path: "/settings" },
     ];
