@@ -10,6 +10,7 @@ function Notes() {
 
   const colors = ["#fff740", "#ff7eb9", "#7afcff", "#feff9c", "#ffffff"];
 
+
   const fetchNotes = async () => {
     try {
       const res = await axios.get("/api/notes");
@@ -18,6 +19,10 @@ function Notes() {
       console.error("Error fetching notes", err);
     }
   };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
   const addNote = async () => {
     if (!newNote.content.trim()) return;
@@ -132,6 +137,7 @@ function Notes() {
               />
             ))}
 
+
             <button
               onClick={addNote}
               style={{
@@ -145,6 +151,23 @@ function Notes() {
               }}
             >
               Save
+            </button>
+            <button
+              onClick={() => {
+                setNewNote({ content: "", color: "#fff740" });
+                setIsAdding(false);
+              }}
+              style={{
+                marginLeft: "10px",
+                padding: "8px 16px",
+                backgroundColor: "#e74c3c",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
             </button>
           </div>
         </div>

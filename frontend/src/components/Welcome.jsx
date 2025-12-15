@@ -63,7 +63,7 @@ function Welcome() {
   const linkStyle = (linkName) => ({
     textDecoration: "none",
     color: "#fff",
-    fontSize: "16px",
+    fontSize: "18px",
     fontWeight: "500",
     position: "relative",
     padding: "5px 0",
@@ -170,7 +170,7 @@ function Welcome() {
         <div style={circleStyle("300px", "-100px", null, null, "-100px", 0)} />
         <div style={circleStyle("200px", null, "-50px", "-50px", null, 5)} />
         <div style={circleStyle("150px", "50%", null, null, "10%", 10)} />
-        <div style={circleStyle("300px", "-50px", "-50px", "-50px", null, 5)} />
+        <div style={circleStyle("20px", "30%", "100%", null, "80%", 100)} />
 
         {/* Header */}
         <header style={headerStyle}>

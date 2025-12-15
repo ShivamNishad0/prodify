@@ -7,6 +7,7 @@ import Products from "./components/Products";
 import Inventory from "./components/Inventory";
 import Profile from "./components/Profile";
 import Orders from "./components/Orders";
+import Tenders from "./components/Tenders";
 import Customers from "./components/Customers";
 import Reports from "./components/Reports";
 import Analytics from "./components/Analytics";
@@ -40,12 +41,12 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="tenders" element={<Tenders />} />
             <Route path="customers" element={<Customers />} />
             <Route path="reports" element={<Reports />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="support" element={<Support />} />
             <Route path="settings" element={<Settings />} />
-
             <Route path="notification" element={<Notifications />} />
             <Route path="messages" element={<Messages />} />
             <Route path="notes" element={<Notes />} />

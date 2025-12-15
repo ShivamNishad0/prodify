@@ -1,9 +1,13 @@
 
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaBell, FaEnvelope, FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
 
 function Navbar() {
+    const navigate = useNavigate();
+    const { logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navbarStyle = {
         position: "sticky",
@@ -115,9 +119,10 @@ function Navbar() {
                     <div
                         style={profileIconStyle}
                     >
+
                         <FaUserCircle 
                             size={40} 
-                            onClick={() => window.location.href = '/profile'}
+                            onClick={() => navigate('/profile')}
                             onMouseEnter={() => setIsDropdownOpen(true)}
                         />
                         
@@ -128,6 +133,7 @@ function Navbar() {
                                 onMouseEnter={() => setIsDropdownOpen(true)}
                                 onMouseLeave={() => setIsDropdownOpen(false)}
                             >
+
                                 <div 
                                     style={dropdownItemStyle}
                                     onMouseEnter={(e) => e.target.style.backgroundColor = "#f5f5f5"}
@@ -135,7 +141,7 @@ function Navbar() {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        window.location.href = '/profile';
+                                        navigate('/profile');
                                         setIsDropdownOpen(false);
                                     }}
                                 >
@@ -149,7 +155,8 @@ function Navbar() {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        window.location.href = '/logout';
+                                        logout();
+                                        navigate('/login');
                                         setIsDropdownOpen(false);
                                     }}
                                 >

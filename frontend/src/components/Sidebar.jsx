@@ -1,6 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { FaHome, FaBox, FaListAlt, FaShoppingCart, FaUsers, FaChartLine, FaCog, FaQuestionCircle, FaInfoCircle } from "react-icons/fa";
+import { SiMarketo } from "react-icons/si";
 import { useState } from "react";
 
 function Sidebar({ isOpen }) {
@@ -12,6 +13,7 @@ function Sidebar({ isOpen }) {
         { name: "Dashboard", icon: <FaHome />, path: "/" },
         { name: "Inventory", icon: <FaBox />, path: "/inventory" },
         { name: "Orders", icon: <FaShoppingCart />, path: "/orders" },
+        { name: "Tenders", icon: <SiMarketo />, path: "/tenders" },
         { name: "Products", icon: <FaListAlt />, path: "/products" },
         { name: "Customers", icon: <FaUsers />, path: "/customers" },
         { name: "Reports", icon: <FaChartLine />, path: "/reports" },
