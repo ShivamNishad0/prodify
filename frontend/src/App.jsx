@@ -16,9 +16,12 @@ import Settings from "./components/Settings";
 import Notifications from "./components/Notifications";
 import Messages from "./components/Messages";
 import Notes from "./components/Notes";
+
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Rightsidebar from "./components/Rightsidebar";
@@ -29,10 +32,13 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+
           {/* PUBLIC ROUTES */}
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         
           {/* PROTECTED ROUTES */}
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -59,3 +65,4 @@ function App() {
 }
 
 export default App;
+

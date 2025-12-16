@@ -205,7 +205,23 @@ function Login() {
                     required
                 />
                 
-                <a href="#" style={{fontSize: "14px", color: "#3cb2a8", textDecoration: "none"}}>Forgot Password?</a>
+
+                <button 
+                    type="button"
+                    onClick={() => navigate('/forgot-password')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: "14px",
+                        color: "#3cb2a8",
+                        textDecoration: "none",
+                        cursor: "pointer",
+                        padding: 0,
+                        textAlign: "left"
+                    }}
+                >
+                    Forgot Password?
+                </button>
 
                 {/* Submit Button */}
                 <button 

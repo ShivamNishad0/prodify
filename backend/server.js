@@ -55,8 +55,10 @@ app.use('/api/inventory', require('./routes/inventory'));
 
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/notifications', require('./routes/notifications'));
+
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/notes', require('./routes/notes'));
+app.use('/api/tenders', require('./routes/tenders'));
 
 // Basic health check route
 app.get('/', (req, res) => {
