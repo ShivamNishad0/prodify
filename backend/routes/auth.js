@@ -45,7 +45,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
               Reset Password
             </a>
           </div>
-          <p>This link will expire in 1 hour for security reasons.</p>
+          <p>This link will expire in 10 minutes for security reasons.</p>
           <p>If you didn't request this password reset, please ignore this email.</p>
           <p>Best regards,<br>The prodify CRM Team</p>
         </div>
@@ -182,7 +182,7 @@ router.post('/forgot-password', async (req, res) => {
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+    const resetTokenExpiry = new Date(Date.now() + 600000); // 10 minutes from now
 
     // Save reset token and expiry to user
     user.resetToken = resetToken;
