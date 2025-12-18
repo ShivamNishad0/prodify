@@ -25,6 +25,7 @@ function Layout() {
         <Sidebar isOpen={isOpen} />
       </div>
 
+
       {/* RIGHT SIDEBAR */}
       <div
         style={{
@@ -34,11 +35,15 @@ function Layout() {
           zIndex: 1000,
         }}
       >
-        <Rightsidebar />
+        <Rightsidebar isOpen={isOpen} />
       </div>
 
       {/* PAGE CONTENT */}
-      <div style={{ marginLeft: "60px", marginRight: "200px" }}>
+      <div style={{ 
+        marginLeft: "60px", 
+        marginRight: isOpen ? "170px" : "60px",
+        transition: "0.3s ease"
+      }}>
         <Outlet />
       </div>
     </>

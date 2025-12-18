@@ -174,7 +174,7 @@ function Welcome() {
 
         {/* Header */}
         <header style={headerStyle}>
-          <h3 style={logoStyle}>prodify</h3>
+          <h1 style={logoStyle}>prodify</h1>
 
           <nav style={navStyle} className="nav-links">
             <Link

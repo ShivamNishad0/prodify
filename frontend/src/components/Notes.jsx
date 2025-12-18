@@ -52,7 +52,6 @@ function Notes() {
         padding: "20px",
         marginLeft: "50px",
         minHeight: "90vh",
-        backgroundColor: "#f4f6f8",
       }}
     >
       {/* HEADER */}
