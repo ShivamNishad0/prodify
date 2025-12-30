@@ -1,61 +1,19 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../contexts/AuthContext';
 
 /**
- * ⚛️ Signup Component (Two-Column Layout with Form Fields)
- * * This component allows a user to input data, manages the state, 
- * and simulates a sign-up/login process upon submission.
+ * ⚛️ Signup Component (Two-Column Layout with Admin-Only Notice)
+ * * This component now shows that account creation is admin-only.
  */
 
 function Signup() {
   const navigate = useNavigate();
-  const { register } = useAuth();
   
-  // 📝 State to manage form input values
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // 📝 Handler for updating state on input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
-    // Clear error when user starts typing
-    if (error) setError('');
+  // Redirect to login page
+  const handleGoToLogin = () => {
+    navigate("/login");
   };
-
-  /**
-   * Handles the form submission with real backend registration:
-   * 1. Prevents default form submit.
-   * 2. Calls backend API for user registration.
-   * 3. Sets authentication state via AuthContext.
-   * 4. Redirects the user to the root path ("/").
-   */
-  const handleSignup = async (e) => {
-    e.preventDefault(); // Stop default form submit behavior
-    
-    setLoading(true);
-    setError('');
-
-    const result = await register(formData.name, formData.email, formData.password);
-
-    if (result.success) {
-      navigate("/"); // Redirect to dashboard/home page
-    } else {
-      setError(result.error);
-    }
-    setLoading(false);
-  };
-
 
   // --- Inline Styles (Retained from the original two-column layout) ---
 
@@ -106,16 +64,6 @@ function Signup() {
     marginBottom: "40px",
   };
 
-  const inputStyle = {
-    width: "100%",
-    padding: "12px",
-    margin: "8px 0 20px 0",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    boxSizing: "border-box", 
-    fontSize: "16px",
-  };
-
   const buttonStyle = {
     width: "100%", // Full width for form
     padding: "15px",
@@ -138,6 +86,11 @@ function Signup() {
     e.currentTarget.style.backgroundColor = "#3cb2a8";
   };
 
+  const warningIconStyle = {
+    fontSize: "48px",
+    marginBottom: "20px",
+    color: "#ff9800"
+  };
 
   return (
     <div style={divStyle}>
@@ -148,90 +101,49 @@ function Signup() {
             <div style={brandLogoStyle}>prodify</div>
             
             <div>
-                <h1>Start Your Journey</h1>
-                <p>Join millions of users and unlock the potential of your productivity. Setting up your account is fast and easy.</p>
+                <h1>Account Creation</h1>
+                <p>Account creation is now restricted to administrators only for enhanced security and proper access control.</p>
             </div>
 
             <p style={{fontSize: "12px", opacity: 0.8}}>© 2025 prodify. All rights reserved.</p>
         </div>
 
-        {/* 🔐 Right Column: Signup Form */}
+        {/* 🔐 Right Column: Admin-Only Notice */}
         <div style={rightColumnStyle}>
-            <h2 style={{color:"#3cb2a8", marginBottom:"10px"}}>Create an Account</h2>
+            <div style={warningIconStyle}>⚠️</div>
+            
+            <h2 style={{color:"#3cb2a8", marginBottom:"10px"}}>Admin-Only Access</h2>
 
-            <p style={{marginBottom: "30px", fontSize: "14px", color: "#666"}}>
-                Enter your details to get started.
+            <p style={{marginBottom: "30px", fontSize: "14px", color: "#666", lineHeight: "1.6"}}>
+                Public registration has been disabled. Only administrators can create new user accounts in the system.
             </p>
             
-            {/* Error Message */}
-            {error && (
-                <div style={{
-                    backgroundColor: '#ffebee',
-                    color: '#c62828',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    fontSize: '14px',
-                    border: '1px solid #ffcdd2'
-                }}>
-                    {error}
-                </div>
-            )}
+            <div style={{
+              backgroundColor: '#fff3e0',
+              color: '#e65100',
+              padding: '16px',
+              borderRadius: '8px',
+              marginBottom: '30px',
+              fontSize: '14px',
+              border: '1px solid #ffcc02'
+            }}>
+              <strong>Need an account?</strong><br/>
+              Please contact your system administrator to request account creation.
+            </div>
             
-            {/* Form wrapped to handle submission */}
-            <form onSubmit={handleSignup}>
-                {/* Name Input */}
-                <label htmlFor="name">Name</label>
-                <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    value={formData.name}
-                    onChange={handleChange}
-                    style={inputStyle}
-                    placeholder="John Doe"
-                    required
-                />
-
-                {/* Email Input */}
-                <label htmlFor="email">Email Address</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value={formData.email}
-                    onChange={handleChange}
-                    style={inputStyle}
-                    placeholder="you@example.com"
-                    required
-                />
-
-                {/* Password Input */}
-                <label htmlFor="password">Password</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    value={formData.password}
-                    onChange={handleChange}
-                    style={inputStyle}
-                    placeholder="Must be at least 8 characters"
-                    required
-                />
-
-                {/* Submit Button */}
-                <button 
-                    type="submit" 
-                    style={buttonStyle}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                >
-                    Create Account
-                </button>
-                <p style={{textAlign: "center", marginTop: "20px", fontSize: "14px"}}>
-                    Already a member? <a href="/login" style={{color: "#3cb2a8", textDecoration: "none"}}>Log In</a>
-                </p>
-            </form>
+            {/* Login Button */}
+            <button 
+                style={buttonStyle}
+                onClick={handleGoToLogin}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
+                Go to Login
+            </button>
+            
+            <p style={{textAlign: "center", marginTop: "20px", fontSize: "14px", color: "#666"}}>
+                Already have credentials? <a href="/login" style={{color: "#3cb2a8", textDecoration: "none"}}>Login here</a>
+            </p>
         </div>
       </div>
     </div>

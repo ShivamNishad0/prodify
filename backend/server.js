@@ -46,6 +46,7 @@ app.use(express.json());
 // --- 6. ROUTES ---
 // Mount modular routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/admin', require('./routes/admin'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));

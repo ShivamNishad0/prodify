@@ -16,6 +16,7 @@ import Settings from "./components/Settings";
 import Notifications from "./components/Notifications";
 import Messages from "./components/Messages";
 import Notes from "./components/Notes";
+import AdminPanel from "./components/AdminPanel";
 
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
@@ -57,6 +58,7 @@ function App() {
             <Route path="messages" element={<Messages />} />
             <Route path="notes" element={<Notes />} />
             <Route path="about" element={<About />} />
+            <Route path="admin" element={<AdminPanel />} />
           </Route>
         </Routes>
       </BrowserRouter>

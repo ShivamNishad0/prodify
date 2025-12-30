@@ -4,11 +4,36 @@ const Customer = require('../models/Customer');
 
 const router = express.Router();
 
-// Get all customers
+// Get all customers with metrics
 router.get('/', auth, async (req, res) => {
   try {
     const customers = await Customer.find().sort({ createdAt: -1 });
-    res.json(customers);
+    
+    // Get order statistics for each customer
+    const Order = require('../models/Order');
+    
+    const customersWithMetrics = await Promise.all(
+      customers.map(async (customer) => {
+        const customerOrders = await Order.find({ customer: customer._id });
+        
+        const totalSpent = customerOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+        const orderCount = customerOrders.length;
+        const lastOrder = customerOrders.length > 0 
+          ? customerOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate))[0]
+          : null;
+        
+        return {
+          ...customer.toObject(),
+          metrics: {
+            totalSpent,
+            orderCount,
+            lastOrderDate: lastOrder ? lastOrder.orderDate : null
+          }
+        };
+      })
+    );
+    
+    res.json(customersWithMetrics);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');

@@ -2,3 +2,4 @@ TODO.md
 backend/.env
 *.env
 auth-debug-plan.md
+ADMIN_LOGIN_GUIDE.md

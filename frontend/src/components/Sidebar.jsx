@@ -1,15 +1,16 @@
 
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaBox, FaListAlt, FaShoppingCart, FaUsers, FaChartLine, FaCog, FaQuestionCircle, FaInfoCircle } from "react-icons/fa";
+import { FaHome, FaBox, FaListAlt, FaShoppingCart, FaUsers, FaChartLine, FaCog, FaQuestionCircle, FaInfoCircle, FaUserShield } from "react-icons/fa";
 import { SiMarketo } from "react-icons/si";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 function Sidebar({ isOpen }) {
     const navigate = useNavigate();
     const [hoveredItem, setHoveredItem] = useState(null);
+    const { user } = useAuth();
 
-
-    const menuItems = [
+    const baseMenuItems = [
         { name: "Dashboard", icon: <FaHome />, path: "/" },
         { name: "Inventory", icon: <FaBox />, path: "/inventory" },
         { name: "Orders", icon: <FaShoppingCart />, path: "/orders" },
@@ -22,6 +23,11 @@ function Sidebar({ isOpen }) {
         { name: "Support", icon: <FaQuestionCircle />, path: "/support" },
         { name: "Settings", icon: <FaCog />, path: "/settings" },
     ];
+
+    // Add admin panel for admin users only
+    const menuItems = user?.role === 'admin' 
+        ? [...baseMenuItems, { name: "Admin Panel", icon: <FaUserShield />, path: "/admin" }]
+        : baseMenuItems;
 
     const sideBarStyle = {
         height: "85vh",

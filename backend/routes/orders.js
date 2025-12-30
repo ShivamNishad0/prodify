@@ -8,9 +8,9 @@ const router = express.Router();
 router.get('/', auth, async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate('customer', 'name email')
-      .populate('items.product', 'name price')
-      .sort({ createdAt: -1 });
+      .populate('customer', 'name email phone address status')
+      .populate('items.product', 'name price category')
+      .sort({ orderDate: -1 });
     res.json(orders);
   } catch (err) {
     console.error(err.message);
