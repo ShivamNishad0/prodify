@@ -7,9 +7,9 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm';
 const connectDB = async () => {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDB connected for seeding');
+    console.log('MongoDB connected for seeding');
   } catch (err) {
-    console.error(`❌ MongoDB connection error: ${err.message}`);
+    console.error(`MongoDB connection error: ${err.message}`);
     process.exit(1);
   }
 };
@@ -208,11 +208,11 @@ const seedOrders = async () => {
     ];
 
     await Order.insertMany(orders);
-    console.log('✅ Orders seeded successfully');
+    console.log('Orders seeded successfully');
     
     return orders;
   } catch (error) {
-    console.error('❌ Error seeding orders:', error);
+    console.error('Error seeding orders:', error);
     throw error;
   }
 };
