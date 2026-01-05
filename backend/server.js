@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // --- 1. CONFIGURATION LOADING ---
 dotenv.config();
@@ -42,6 +43,9 @@ app.use(cors({
 
 // B. Express JSON Parser
 app.use(express.json());
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- 6. ROUTES ---
 // Mount modular routes
