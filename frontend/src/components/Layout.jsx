@@ -5,7 +5,8 @@ import Sidebar from "./Sidebar";
 import Rightsidebar from "./Rightsidebar";
 
 function Layout() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isLeftOpen, setIsLeftOpen] = useState(false);
+  const [isRightOpen, setIsRightOpen] = useState(false);
 
   return (
     <>
@@ -19,12 +20,11 @@ function Layout() {
           left: 0,
           zIndex: 1000,
         }}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
+        onMouseEnter={() => setIsLeftOpen(true)}
+        onMouseLeave={() => setIsLeftOpen(false)}
       >
-        <Sidebar isOpen={isOpen} />
+        <Sidebar isOpen={isLeftOpen} />
       </div>
-
 
       {/* RIGHT SIDEBAR */}
       <div
@@ -34,16 +34,20 @@ function Layout() {
           right: 0,
           zIndex: 1000,
         }}
+        onMouseEnter={() => setIsRightOpen(true)}
+        onMouseLeave={() => setIsRightOpen(false)}
       >
-        <Rightsidebar isOpen={isOpen} />
+        <Rightsidebar isOpen={isRightOpen} />
       </div>
 
       {/* PAGE CONTENT */}
-      <div style={{ 
-        marginLeft: "60px", 
-        marginRight: isOpen ? "170px" : "60px",
-        transition: "0.3s ease"
-      }}>
+      <div
+        style={{
+          marginLeft: isLeftOpen ? "170px" : "60px",
+          marginRight: isRightOpen ? "170px" : "60px",
+          transition: "0.3s ease",
+        }}
+      >
         <Outlet />
       </div>
     </>
