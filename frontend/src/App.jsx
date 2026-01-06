@@ -17,7 +17,6 @@ import Notifications from "./components/Notifications";
 import Messages from "./components/Messages";
 import Notes from "./components/Notes";
 import AdminPanel from "./components/AdminPanel";
-
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -25,7 +24,6 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
-import Rightsidebar from "./components/Rightsidebar";
 import About from "./components/About";
 
 function App() {

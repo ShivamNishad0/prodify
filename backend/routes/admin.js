@@ -103,7 +103,7 @@ router.post('/create-user', adminAuth, async (req, res) => {
       name,
       email,
       password: tempPassword,
-      role,
+      role: 'employee' // Force role to 'employee' for created users
     });
 
     // Hash password
