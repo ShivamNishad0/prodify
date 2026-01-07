@@ -3,10 +3,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 
-import pic1 from '../../../asset/img/Home_Page.png';
-import pic2 from '../../../asset/img/Sidebar.png';
-import pic3 from '../../../asset/img/Signin_Page.png';
-import pic4 from '../../../asset/img/Signup_Page.png';
+import pic1 from '../../../asset/img/1.png';
+import pic2 from '../../../asset/img/2.png';
+import pic3 from '../../../asset/img/3.png';
+import pic4 from '../../../asset/img/4.png';
 
 export { pic1, pic2, pic3, pic4 };
 // Slider settings
