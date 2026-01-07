@@ -7,6 +7,7 @@ module.exports = async function (req, res, next) {
 
   // Check if no token
   if (!token) {
+    console.log('AdminAuth middleware: No token provided');
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
@@ -20,18 +21,20 @@ module.exports = async function (req, res, next) {
     const user = await User.findById(decoded.user.id).select('-password');
     
     if (!user) {
+      console.log('AdminAuth middleware: User not found from token');
       return res.status(401).json({ msg: 'Token is not valid' });
     }
 
     // Check if user is admin
     if (user.role !== 'admin') {
+      console.log('AdminAuth middleware: Non-admin user attempted access');
       return res.status(403).json({ msg: 'Access denied. Admin privileges required.' });
     }
 
     req.user = user;
     next();
   } catch (err) {
-    console.error('Admin auth middleware error:', err.message);
+    console.log('AdminAuth middleware: Token verification failed:', err.message);
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };

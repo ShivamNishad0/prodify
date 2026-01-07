@@ -113,7 +113,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // Create product
-router.post('/', [auth, adminAuth], upload.single('photo'), async (req, res) => {
+router.post('/', adminAuth, upload.single('photo'), async (req, res) => {
   try {
     const {
       title,
@@ -203,7 +203,7 @@ router.post('/', [auth, adminAuth], upload.single('photo'), async (req, res) => 
 });
 
 // Update product
-router.put('/:id', [auth, adminAuth], upload.single('photo'), async (req, res) => {
+router.put('/:id', adminAuth, upload.single('photo'), async (req, res) => {
   try {
     const {
       title,
@@ -305,7 +305,7 @@ router.put('/:id', [auth, adminAuth], upload.single('photo'), async (req, res) =
 });
 
 // Delete product
-router.delete('/:id', [auth, adminAuth], async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -354,7 +354,7 @@ router.get('/meta/low-stock', auth, async (req, res) => {
 });
 
 // Bulk update stock
-router.post('/bulk/stock', [auth, adminAuth], async (req, res) => {
+router.post('/bulk/stock', adminAuth, async (req, res) => {
   try {
     const { updates } = req.body; // Array of { id, quantity }
 

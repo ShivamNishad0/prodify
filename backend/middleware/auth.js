@@ -6,6 +6,7 @@ module.exports = function (req, res, next) {
 
   // Check if no token
   if (!token) {
+    console.log('Auth middleware: No token provided');
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
@@ -18,6 +19,7 @@ module.exports = function (req, res, next) {
     req.user = decoded.user;
     next();
   } catch (err) {
+    console.log('Auth middleware: Token verification failed:', err.message);
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
