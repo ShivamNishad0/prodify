@@ -4,44 +4,38 @@ import { useAuth } from "../contexts/AuthContext";
 
 function Messages() {
   const { user: currentUser } = useAuth();
-
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef(null);
 
-  /* ================= FETCH USERS ================= */
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  /* ================= FETCH MESSAGES (POLLING) ================= */
   useEffect(() => {
     if (!selectedUser) return;
-
     fetchMessages(selectedUser._id);
-
-    const intervalId = setInterval(() => {
-      fetchMessages(selectedUser._id);
-    }, 3000);
-
-    return () => clearInterval(intervalId);
+    const interval = setInterval(() => fetchMessages(selectedUser._id), 3000);
+    return () => clearInterval(interval);
   }, [selectedUser]);
 
-  /* ================= AUTO SCROLL ================= */
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* ================= API CALLS ================= */
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("/api/messages/users");
       setUsers(res.data);
     } catch (err) {
-      console.error("Error fetching users", err);
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,185 +44,214 @@ function Messages() {
       const res = await axios.get(`/api/messages/${userId}`);
       setMessages(res.data);
     } catch (err) {
-      console.error("Error fetching messages", err);
+      console.error("Error:", err);
     }
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedUser) return;
-
     try {
       const res = await axios.post("/api/messages", {
         recipient: selectedUser._id,
         content: newMessage,
       });
-
       setMessages((prev) => [...prev, res.data]);
       setNewMessage("");
     } catch (err) {
-      console.error("Error sending message", err);
+      console.error("Error:", err);
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const filteredUsers = users.filter(u =>
+    u.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  /* ================= UI ================= */
   return (
-    <div
-      style={{
+    <div style={{ padding: "20px" }}>
+      <div style={{
         display: "flex",
-        height: "90vh",
-        marginLeft: "50px",
-        backgroundColor: "#f4f6f8",
-      }}
-    >
-      {/* ================= USERS LIST ================= */}
-      <div
-        style={{
-          width: "300px",
-          backgroundColor: "#fff",
-          borderRight: "1px solid #ddd",
-          overflowY: "auto",
-        }}
-      >
-        <h2 style={{ padding: "15px", borderBottom: "1px solid #ddd" }}>
-          Messages
-        </h2>
-
-        {users.length === 0 && (
-          <p style={{ padding: "10px", color: "#777" }}>No users found</p>
-        )}
-
-        {users.map((u) => (
-          <div
-            key={u._id}
-            onClick={() => setSelectedUser(u)}
-            style={{
-              padding: "12px",
-              cursor: "pointer",
-              backgroundColor:
-                selectedUser?._id === u._id ? "#eef2f7" : "#fff",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            {u.name}
+        height: "calc(100vh - 100px)",
+        backgroundColor: "#fff",
+        borderRadius: "15px",
+        overflow: "hidden",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        border: "1px solid #e0e0e0"
+      }}>
+        {/* Sidebar */}
+        <div style={{
+          width: "320px",
+          borderRight: "1px solid #e0e0e0",
+          display: "flex",
+          flexDirection: "column"
+        }}>
+          <div style={{
+            padding: "20px",
+            background: "linear-gradient(135deg, #3cb2a8 0%, #2a8a81 100%)",
+            color: "white"
+          }}>
+            <h2 style={{ margin: "0 0 5px 0", fontSize: "22px" }}>Messages</h2>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: "13px" }}>{users.length} users</p>
           </div>
-        ))}
-      </div>
 
-      {/* ================= CHAT AREA ================= */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        {selectedUser ? (
-          <>
-            {/* HEADER */}
-            <div
-              style={{
-                padding: "15px",
-                borderBottom: "1px solid #ddd",
-                backgroundColor: "#fff",
-                fontWeight: "bold",
-              }}
-            >
-              {selectedUser.name}
-            </div>
+          <input
+            type="text"
+            placeholder="🔍 Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              margin: "15px",
+              padding: "10px",
+              border: "2px solid #e0e0e0",
+              borderRadius: "8px",
+              outline: "none"
+            }}
+          />
 
-            {/* MESSAGES */}
-            <div
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                padding: "20px",
-              }}
-            >
-              {messages.length === 0 && (
-                <p style={{ textAlign: "center", color: "#777" }}>
-                  No messages yet
-                </p>
-              )}
-
-              {messages.map((msg) => (
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>Loading...</div>
+            ) : filteredUsers.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>No users</div>
+            ) : (
+              filteredUsers.map((u) => (
                 <div
-                  key={msg._id}
+                  key={u._id}
+                  onClick={() => setSelectedUser(u)}
                   style={{
-                    textAlign:
-                      msg.sender === currentUser._id ? "right" : "left",
-                    marginBottom: "8px",
+                    padding: "15px 20px",
+                    cursor: "pointer",
+                    backgroundColor: selectedUser?._id === u._id ? "#e8f5e9" : "#fff",
+                    borderBottom: "1px solid #f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px"
                   }}
                 >
-                  <span
-                    style={{
-                      display: "inline-block",
-                      padding: "8px 12px",
-                      borderRadius: "10px",
-                      backgroundColor:
-                        msg.sender === currentUser._id
-                          ? "#daf8cb"
-                          : "#fff",
-                      maxWidth: "70%",
-                    }}
-                  >
-                    {msg.content}
-                  </span>
+                  <div style={{
+                    width: "35px",
+                    height: "35px",
+                    borderRadius: "50%",
+                    backgroundColor: "#3cb2a8",
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "600"
+                  }}>
+                    {u.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ fontWeight: "600", fontSize: "15px" }}>{u.name}</div>
                 </div>
-              ))}
+              ))
+            )}
+          </div>
+        </div>
 
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* INPUT */}
-            <form
-              onSubmit={sendMessage}
-              style={{
+        {/* Chat Area */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          {selectedUser ? (
+            <>
+              <div style={{
+                padding: "20px",
+                borderBottom: "2px solid #e0e0e0",
                 display: "flex",
-                padding: "15px",
-                backgroundColor: "#fff",
-                borderTop: "1px solid #ddd",
-              }}
-            >
-              <input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                style={{
-                  flex: 1,
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  outline: "none",
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  marginLeft: "10px",
-                  padding: "10px 20px",
+                alignItems: "center",
+                gap: "12px"
+              }}>
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  backgroundColor: "#3cb2a8",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "600"
+                }}>
+                  {selectedUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div style={{ fontWeight: "600", fontSize: "18px" }}>{selectedUser.name}</div>
+              </div>
+
+              <div style={{ flex: 1, overflowY: "auto", padding: "20px", backgroundColor: "#f8f9fa" }}>
+                {messages.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "60px", color: "#999" }}>
+                    <div style={{ fontSize: "48px" }}>💬</div>
+                    <p>No messages yet</p>
+                  </div>
+                ) : (
+                  messages.map((msg) => (
+                    <div
+                      key={msg._id}
+                      style={{
+                        display: "flex",
+                        justifyContent: msg.sender === currentUser._id ? "flex-end" : "flex-start",
+                        marginBottom: "12px"
+                      }}
+                    >
+                      <div style={{
+                        maxWidth: "70%",
+                        padding: "12px 16px",
+                        borderRadius: msg.sender === currentUser._id ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                        backgroundColor: msg.sender === currentUser._id ? "#3cb2a8" : "#fff",
+                        color: msg.sender === currentUser._id ? "#fff" : "#333",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
+                      }}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              <form onSubmit={sendMessage} style={{
+                display: "flex",
+                padding: "20px",
+                borderTop: "2px solid #e0e0e0",
+                gap: "15px"
+              }}>
+                <input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type message..."
+                  style={{
+                    flex: 1,
+                    padding: "12px 16px",
+                    borderRadius: "25px",
+                    border: "2px solid #e0e0e0",
+                    outline: "none"
+                  }}
+                />
+                <button type="submit" style={{
+                  padding: "12px 30px",
                   border: "none",
-                  backgroundColor: "#4f46e5",
+                  backgroundColor: "#3cb2a8",
                   color: "#fff",
-                  borderRadius: "5px",
+                  borderRadius: "25px",
                   cursor: "pointer",
-                }}
-              >
-                Send
-              </button>
-            </form>
-          </>
-        ) : (
-          <div
-            style={{
+                  fontWeight: "600"
+                }}>
+                  Send
+                </button>
+              </form>
+            </>
+          ) : (
+            <div style={{
               flex: 1,
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              color: "#777",
-            }}
-          >
-            Select a user to start chatting
-          </div>
-        )}
+              color: "#999"
+            }}>
+              <div style={{ fontSize: "64px" }}></div>
+              <h3>Select a conversation</h3>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
