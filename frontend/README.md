@@ -26,7 +26,6 @@ A modern, responsive React 19 frontend for a comprehensive Customer Relationship
 - **📦 Product Management** - Product catalog with categories and pricing
 - **🛒 Order Management** - Order tracking with status updates
 - **📈 Inventory Management** - Stock tracking and management
-- **🎯 Tender Management** - Government and corporate tender tracking
 - **📝 Notes System** - Internal note-taking and collaboration
 - **🔔 Notifications** - Real-time notification center
 - **💬 Messaging** - Customer communication tracking
@@ -193,7 +192,6 @@ frontend/
 │   │   │   ├── Sidebar.jsx     # Sidebar navigation
 │   │   │   ├── Signup.jsx      # Registration page
 │   │   │   ├── Support.jsx     # Support page
-│   │   │   ├── Tenders.jsx     # Tender management
 │   │   │   └── Welcome.jsx     # Welcome page
 │   │   ├── charts/             # Chart components
 │   │   │   ├── CustomerChart.jsx       # Customer growth chart
@@ -249,7 +247,6 @@ frontend/
 | `Products` | `/products` | Product catalog |
 | `Orders` | `/orders` | Order management |
 | `Inventory` | `/inventory` | Inventory tracking |
-| `Tenders` | `/tenders` | Tender management |
 | `Analytics` | `/analytics` | Analytics dashboard |
 | `Notes` | `/notes` | Notes system |
 | `Messages` | `/messages` | Messaging center |

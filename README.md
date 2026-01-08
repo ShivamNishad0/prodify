@@ -116,7 +116,6 @@ prodify-crm/
 │   │   ├── Notification.js         # Notification schema
 │   │   ├── Order.js                # Order schema
 │   │   ├── Product.js              # Product schema
-│   │   ├── Tender.js               # Tender schema
 │   │   └── User.js                 # User schema
 │   ├── routes/                     # API route handlers
 │   │   ├── admin.js                # Admin-specific routes
@@ -128,15 +127,13 @@ prodify-crm/
 │   │   ├── notes.js                # Notes management
 │   │   ├── notifications.js        # Notification handling
 │   │   ├── orders.js               # Order processing
-│   │   ├── products.js             # Product management
-│   │   └── tenders.js              # Tender management
+│   │   └── products.js             # Product management
 │   ├── middleware/                 # Custom middleware
 │   │   ├── adminAuth.js            # Admin authentication
 │   │   └── auth.js                 # JWT authentication
 │   ├── seedAdmin.js                # Admin user seeding
 │   ├── seedCustomers.js            # Customer data seeding
 │   │   ├── seedOrders.js           # Order data seeding
-│   │   ├── seedTenders.js          # Tender data seeding
 │   ├── server.js                   # Main server entry point
 │   ├── package.json                # Backend dependencies
 │   └── README.md                   # Backend documentation
@@ -242,11 +239,9 @@ CORS_ORIGINS=http://localhost:5173,http://localhost:5174
 
 The project includes seed scripts to populate the database with sample data for testing and development.
 
-### Seeding Order (Important!)
+### Seeding Data (Important!)
 
-Always seed in this order to maintain referential integrity:
-
-1. **Admin User** → 2. **Customers** → 3. **Products** → 4. **Orders** → 5. **Tenders**
+**Admin User**
 
 ### Seed Admin User
 
@@ -262,66 +257,6 @@ node seedAdmin.js
 - Password: `admin123`
 
 > ⚠️ **Security Note:** Change the admin password after first login!
-
-### Seed Customers
-
-Populates the database with sample customer data:
-
-```bash
-cd backend
-node seedCustomers.js
-```
-
-**Creates 8 sample customers with various statuses (active, inactive, prospect)**
-
-### Seed Products
-
-Populates the database with sample product data:
-
-```bash
-cd backend
-node seedProducts.js
-```
-
-**Creates various products with pricing and categories**
-
-### Seed Orders
-
-Populates the database with sample order data:
-
-```bash
-cd backend
-node seedOrders.js
-```
-
-**Creates 10 sample orders linked to customers and products**
-
-> 📋 **Prerequisite:** Run `seedCustomers.js` and `seedProducts.js` first!
-
-### Seed Tenders
-
-Populates the database with sample government/corporate tenders:
-
-```bash
-cd backend
-node seedTenders.js
-```
-
-**Creates 5 sample tenders with full details**
-
-### Seed All Data (Quick Script)
-
-Create a combined seed script for convenience:
-
-```bash
-# Run all seeds in order
-node seedAdmin.js && \
-node seedCustomers.js && \
-node seedProducts.js && \
-node seedOrders.js && \
-```
-
----
 
 ## 🚀 Running the Application
 

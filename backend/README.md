@@ -1,6 +1,6 @@
 # CRM Backend API
 
-A robust Node.js/Express backend API for a comprehensive Customer Relationship Management (CRM) system. This API handles authentication, customer management, products, orders, tenders, inventory, analytics, and more.
+A robust Node.js/Express backend API for a comprehensive Customer Relationship Management (CRM) system. This API handles authentication, customer management, products, orders, inventory, analytics, and more.
 
 ## 📋 Table of Contents
 
@@ -24,7 +24,6 @@ A robust Node.js/Express backend API for a comprehensive Customer Relationship M
 - **Product Catalog** - Product management with categories and pricing
 - **Order Processing** - Order creation, tracking, and status management
 - **Inventory Management** - Real-time stock tracking and management
-- **Tender Management** - Government and corporate tender tracking with document support
 - **Analytics API** - Dashboard analytics and sales reporting
 - **Messaging System** - Internal communication tracking
 - **Notes & Notifications** - Activity tracking and team communication
@@ -139,11 +138,7 @@ The backend includes seed scripts to populate the database with sample data for 
 ### ⚠️ Important Seeding Order
 
 ```
-1. seedAdmin.js    → Creates admin user
-2. seedCustomers.js → Creates customer records
-3. (seedProducts.js) → Creates product records
-4. seedOrders.js   → Creates orders (requires customers & products)
-5. seedTenders.js  → Creates tender records
+seedAdmin.js    → Creates admin user
 ```
 
 ### Seed Admin User
@@ -174,145 +169,11 @@ node seedAdmin.js
 - **Password:** `admin123`
 
 > ⚠️ **Security Warning:** Change the admin password immediately after first login!
-
----
-
-### Seed Customers
-
-Populates the database with sample customer data including contact information and status.
-
-```bash
-node seedCustomers.js
-```
-
-**Creates 8 sample customers:**
-1. John Smith - Active customer (New York)
-2. Sarah Johnson - Active customer (Los Angeles)
-3. Michael Brown - Inactive customer (Chicago)
-4. Emily Davis - Active customer (Houston)
-5. David Wilson - Prospect customer (Phoenix)
-6. Jessica Martinez - Active customer (Philadelphia)
-7. Robert Taylor - Inactive customer (San Antonio)
-8. Jennifer Garcia - Active customer (San Diego)
-
-**Output:**
-```
-✅ MongoDB connected for seeding
-✅ Customers seeded successfully
-```
-
----
-
-### Seed Products
-
-Populates the database with sample product data.
-
-```bash
-node seedProducts.js
-```
-
-**Creates products with:**
-- Product names and descriptions
-- Pricing information
-- Categories
-- Stock quantities
-
-**Output:**
-```
-✅ MongoDB connected for seeding
-✅ Products seeded successfully
-```
-
----
-
-### Seed Orders
-
-Populates the database with sample order data. **Prerequisites:** Customers and Products must be seeded first.
-
-```bash
-node seedOrders.js
-```
-
-**Creates 10 sample orders with:**
-- Customer associations
-- Order items with products and quantities
-- Total amounts
-- Various statuses (pending, processing, shipped, delivered, cancelled)
-- Order dates
-- Shipping addresses
-
-**Order Statuses:**
-- Pending
-- Processing
-- Shipped
-- Delivered
-- Cancelled
-
-**Output:**
-```
-MongoDB connected for seeding
-Orders seeded successfully
-```
-
-> 📋 **Prerequisite:** Run `seedCustomers.js` and `seedProducts.js` before this script!
-
----
-
-### Seed Tenders
-
-Populates the database with sample government and corporate tender opportunities.
-
-```bash
-node seedTenders.js
-```
-
-**Creates 5 sample tenders:**
-1. Supply of IT Equipment for Government Offices (₹5 Crore)
-2. Construction of Rural Road Infrastructure (₹7.5 Crore)
-3. Office Stationery and Consumables Supply (₹1.5 Crore)
-4. Consultancy Services for Digital Transformation (₹2.5 Crore)
-5. Server Maintenance and Support Services (₹1.2 Crore)
-
-**Each tender includes:**
-- Title and detailed description
-- Organization name
-- Category and tender ID
-- Estimated value
-- Application and opening deadlines
-- Status (Active/Closed)
-- Location
-- Contact information
-- Required documents
-- Eligibility criteria
-- Terms and conditions
-
-**Output:**
-```
-Connected to MongoDB
-Cleared existing tenders
-Successfully inserted 5 sample tenders
-1. Supply of IT Equipment for Government Offices - Ministry of Electronics - Active
-2. Construction of Rural Road Infrastructure - Ministry of Rural Development - Active
-...
-Database connection closed
-```
-
 ---
 
 ### Quick Seed All Script
 
 For convenience, you can run all seed scripts in sequence:
-
-```bash
-# Option 1: Run individually in order
-node seedAdmin.js && \
-node seedCustomers.js && \
-node seedProducts.js && \
-node seedOrders.js && \
-node seedTenders.js
-
-# Option 2: Create a combined seed script
-```
 
 ---
 
@@ -431,18 +292,6 @@ curl http://localhost:5000
 | PUT | `/api/inventory/:id/stock` | Update stock level | Yes |
 | DELETE | `/api/inventory/:id` | Delete inventory item | Yes |
 
-### Tenders (`/api/tenders`)
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/tenders` | List all tenders | Yes |
-| GET | `/api/tenders/:id` | Get tender by ID | Yes |
-| POST | `/api/tenders` | Create new tender | Yes |
-| PUT | `/api/tenders/:id` | Update tender | Yes |
-| DELETE | `/api/tenders/:id` | Delete tender | Yes |
-| GET | `/api/tenders/status/:status` | Filter by status | Yes |
-| GET | `/api/tenders/category/:category` | Filter by category | Yes |
-
 ### Analytics (`/api/analytics`)
 
 | Method | Endpoint | Description | Auth Required |
@@ -540,7 +389,6 @@ backend/
 │   ├── Notification.js        # Notification schema and model
 │   ├── Order.js               # Order schema and model
 │   ├── Product.js             # Product schema and model
-│   ├── Tender.js              # Tender schema and model
 │   └── User.js                # User schema and model
 ├── routes/                     # API route handlers
 │   ├── admin.js               # Admin-specific routes
@@ -552,15 +400,11 @@ backend/
 │   ├── notes.js               # Notes routes
 │   ├── notifications.js       # Notification routes
 │   ├── orders.js              # Order processing routes
-│   ├── products.js            # Product management routes
-│   └── tenders.js             # Tender management routes
+│   └── products.js            # Product management routes
 ├── middleware/                 # Custom middleware
 │   ├── adminAuth.js           # Admin authentication middleware
 │   └── auth.js                # JWT authentication middleware
 ├── seedAdmin.js               # Admin user seeding script
-├── seedCustomers.js           # Customer data seeding script
-├── seedOrders.js              # Order data seeding script
-├── seedTenders.js             # Tender data seeding script
 ├── server.js                  # Main server entry point
 ├── package.json               # Backend dependencies and scripts
 └── .env                       # Environment variables (create this)
