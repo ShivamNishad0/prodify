@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
+import chatImage from "../assets/chat.png";
 
 function Messages() {
   const { user: currentUser } = useAuth();
@@ -247,7 +248,7 @@ function Messages() {
               justifyContent: "center",
               color: "#999"
             }}>
-              <div style={{ fontSize: "64px" }}></div>
+              <div style={{ fontSize: "64px", marginBottom: "10px", opacity: 0.5, color: "#000000ff"}}><img src={chatImage} alt="No conversation selected" /></div>
               <h3>Select a conversation</h3>
             </div>
           )}
