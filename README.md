@@ -1,6 +1,6 @@
 # 🚀 Prodify CRM
 
-A comprehensive, full-stack Customer Relationship Management (CRM) system built with React and Node.js/Express. Manage your customers, products, orders, tenders, and analytics all in one powerful platform.
+A comprehensive, full-stack Customer Relationship Management (CRM) system built with React and Node.js/Express. Manage your customers, products, orders, and analytics all in one powerful platform.
 
 ![Prodify CRM](asset/img/Home_Page.png)
 
@@ -33,7 +33,6 @@ A comprehensive, full-stack Customer Relationship Management (CRM) system built 
 - **🛒 Order Processing** - Streamlined order creation, tracking, and status management
 - **📊 Inventory Tracking** - Real-time inventory management with stock level monitoring
 - **📈 Analytics & Reporting** - Interactive charts and dashboards for data-driven insights
-- **🎯 Tender Management** - Government and corporate tender tracking with document management
 
 ### Additional Features
 - **📝 Notes & Notifications** - Internal communication and activity tracking
@@ -320,7 +319,6 @@ node seedAdmin.js && \
 node seedCustomers.js && \
 node seedProducts.js && \
 node seedOrders.js && \
-node seedTenders.js
 ```
 
 ---
@@ -424,14 +422,6 @@ For detailed API documentation, see the [Backend README](./backend/README.md)
 | GET | `/api/analytics/dashboard` | Dashboard analytics |
 | GET | `/api/analytics/sales` | Sales data and trends |
 
-#### Tenders
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/tenders` | List all tenders |
-| GET | `/api/tenders/:id` | Get tender by ID |
-| POST | `/api/tenders` | Create new tender |
-| PUT | `/api/tenders/:id` | Update tender |
-| DELETE | `/api/tenders/:id` | Delete tender |
 
 ### Authentication
 
