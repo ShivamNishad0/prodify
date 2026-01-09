@@ -93,7 +93,6 @@ const tenderSchema = new mongoose.Schema({
 
 tenderSchema.pre('save', function(next) {
   this.updatedAt = new Date();
-  next();
 });
 
 module.exports = mongoose.model('Tender', tenderSchema);

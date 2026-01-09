@@ -44,13 +44,13 @@ async function createInitialAdmin() {
 
     await adminUser.save();
 
-    console.log('✅ Initial admin user created successfully!');
-    console.log('📧 Email:', adminEmail);
-    console.log('🔒 Password:', adminPassword);
-    console.log('👤 Name:', adminName);
+    console.log('Initial admin user created successfully!');
+    console.log('Email:', adminEmail);
+    console.log('Password:', adminPassword);
+    console.log('Name:', adminName);
     console.log('');
-    console.log('⚠️  IMPORTANT: Please change the admin password after first login for security reasons.');
-    console.log('💡 You can set custom admin credentials by adding these environment variables:');
+    console.log('IMPORTANT: Please change the admin password after first login for security reasons.');
+    console.log('You can set custom admin credentials by adding these environment variables:');
     console.log('   - INITIAL_ADMIN_EMAIL');
     console.log('   - INITIAL_ADMIN_PASSWORD'); 
     console.log('   - INITIAL_ADMIN_NAME');

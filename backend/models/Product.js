@@ -161,7 +161,6 @@ const productSchema = new mongoose.Schema({
 // Update the updatedAt field before saving
 productSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Index for better search performance
