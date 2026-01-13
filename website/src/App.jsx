@@ -1,11 +1,13 @@
 import Navbar from "@shared/components/Navbar";
 import Footer from "@shared/components/Footer";
 import Offers from "./components/Offers";
+import Headerforcategory from "./components/Headerforcategory";
 function App() {
   return (
     <>
       <Navbar />
-      <Offers className="app-content" />  
+      <Headerforcategory />
+      <Offers className="app-content" /> 
       <Footer />
     </>
   );
