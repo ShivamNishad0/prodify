@@ -24,11 +24,11 @@ const sliderSettings = {
 function Offers() {
   return (
     <div>
-      <div style={{ padding: "10px", paddingBottom: "20px", textAlign: "center" }}>
-        <Slider {...sliderSettings} style={{ marginBottom: '2rem', borderRadius: '10px', overflow: 'hidden' }}>
+      <div style={{ padding: "10px", textAlign: "center", marginTop: "-10px" }}>
+        <Slider {...sliderSettings} style={{ borderRadius: '10px', overflow: 'hidden' }}>
           {[pic1, pic2, pic3, pic4].map((img, index) => (
             <div key={index}>
-              <img src={img} alt={`Slide ${index + 1}`} style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
+              <img src={img} alt={`Slide ${index + 1}`} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
             </div>
           ))}
         </Slider>
