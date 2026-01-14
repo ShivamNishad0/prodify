@@ -21,6 +21,22 @@ const ALLOWED_ORIGINS = process.env.CORS_ORIGINS ?
                         ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
 
 
+// --- 3. KEYCLOAK CONFIGURATION ---
+// Initialize Keycloak if configured
+let keycloakMiddleware = null;
+let keycloakRoutes = null;
+
+if (process.env.KEYCLOAK_URL && process.env.KEYCLOAK_REALM) {
+  try {
+    const { keycloak, keycloakMiddleware: km } = require('./config/keycloak');
+    keycloakMiddleware = km;
+    keycloakRoutes = require('./routes/keycloakAuth');
+    console.log('Keycloak configuration loaded');
+  } catch (err) {
+    console.warn('Keycloak initialization failed:', err.message);
+  }
+}
+
 // --- 4. DATABASE CONNECTION ---
 const connectDB = async () => {
   try {
@@ -47,6 +63,11 @@ app.use(express.json());
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Apply Keycloak middleware if configured
+if (keycloakMiddleware) {
+  keycloakMiddleware(app);
+}
+
 // --- 6. ROUTES ---
 // Mount modular routes
 app.use('/api/auth', require('./routes/auth'));
@@ -64,6 +85,11 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/tenders', require('./routes/tenders'));
+
+// Keycloak authentication routes (if configured)
+if (keycloakRoutes) {
+  app.use('/api/keycloak', keycloakRoutes);
+}
 
 // Basic health check route
 app.get('/', (req, res) => {

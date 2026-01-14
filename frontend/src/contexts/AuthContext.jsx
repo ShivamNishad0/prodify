@@ -1,15 +1,7 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 
 // Configure axios defaults
 
@@ -59,7 +51,10 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData);
       
-      return { success: true };
+      // Store user type for redirect logic
+      localStorage.setItem('userType', 'admin');
+      
+      return { success: true, user: userData };
     } catch (error) {
       return {
         success: false,
@@ -89,7 +84,14 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('userType');
   };
+
+  // Check if user is an admin
+  const isAdmin = user?.role === 'admin';
+  
+  // Check if user is an employee or manager
+  const isStaff = ['admin', 'manager', 'employee'].includes(user?.role);
 
   const value = {
     user,
@@ -98,7 +100,10 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user && !!token
+    isAuthenticated: !!user && !!token,
+    isAdmin,
+    isStaff,
+    userType: 'admin'
   };
 
   return (

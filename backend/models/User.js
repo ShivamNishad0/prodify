@@ -12,12 +12,26 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false, // Not required for Keycloak users
   },
   role: {
     type: String,
     enum: ['admin', 'employee', 'manager'],
     default: 'employee',
+  },
+  // Keycloak authentication fields
+  keycloakId: {
+    type: String,
+    default: null,
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'keycloak'],
+    default: 'local',
+  },
+  isWebsiteUser: {
+    type: Boolean,
+    default: false,
   },
   resetToken: {
     type: String,

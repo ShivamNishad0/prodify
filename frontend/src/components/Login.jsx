@@ -39,6 +39,7 @@ function Login() {
    * 3. Sets authentication state via AuthContext.
    * 4. Redirects the user to the root path ("/").
    */
+
   const handleLogin = async (e) => {
     e.preventDefault(); // Stop default form submit behavior
     
@@ -48,12 +49,18 @@ function Login() {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
-      navigate("/"); // Redirect to dashboard/home page
+      // Check user role and redirect accordingly
+      if (result.user && result.user.role === 'admin') {
+        navigate("/"); // Redirect admin to dashboard
+      } else {
+        navigate("/"); // Redirect staff to dashboard
+      }
     } else {
       setError(result.error);
     }
     setLoading(false);
   };
+
 
 
   // --- Inline Styles (Consistent with Signup/Two-Column Design) ---
@@ -229,8 +236,9 @@ function Login() {
                     style={buttonStyle}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
+                    disabled={loading}
                 >
-                    Log In
+                    {loading ? 'Logging In...' : 'Log In'}
                 </button>
                 <p style={{textAlign: "center", marginTop: "20px", fontSize: "14px"}}>
                     Don't have an account? <a href="/signup" style={{color: "#3cb2a8", textDecoration: "none"}}>Sign Up</a>
