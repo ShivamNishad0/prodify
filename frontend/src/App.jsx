@@ -19,6 +19,7 @@ import Notes from "./components/Notes";
 import AdminPanel from "./components/AdminPanel";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
+import KeycloakLogin from "./components/KeycloakLogin";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
@@ -35,6 +36,7 @@ function App() {
           {/* PUBLIC ROUTES */}
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/keycloak-login" element={<KeycloakLogin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />

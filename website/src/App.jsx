@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import React from "react";
 import { WebsiteAuthProvider } from "./contexts/WebsiteAuthContext";
 import Navbar from "@shared/components/Navbar";
@@ -16,7 +16,7 @@ function Home() {
     <>
       <Navbar />
       <Headerforcategory />
-      <Offers className="app-content" /> 
+      <Offers className="app-content" />
       <Topdeals />
       <Footer />
     </>
@@ -26,23 +26,21 @@ function Home() {
 function App() {
   return (
     <WebsiteAuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          
-          {/* Auth callback route (for Keycloak redirect) */}
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          
-          {/* Protected Routes */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Auth callback route (for Keycloak redirect) */}
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Protected Routes */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } />
+      </Routes>
     </WebsiteAuthProvider>
   );
 }
@@ -50,13 +48,13 @@ function App() {
 // Auth callback component to handle token from backend
 function AuthCallback() {
   const [status, setStatus] = React.useState('Processing authentication...');
-  
+
   React.useEffect(() => {
     // Get token from URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const error = urlParams.get('error');
-    
+
     if (error) {
       setStatus('Authentication failed. Redirecting to login...');
       setTimeout(() => {
@@ -64,7 +62,7 @@ function AuthCallback() {
       }, 2000);
       return;
     }
-    
+
     if (token) {
       // Store token and redirect to home
       localStorage.setItem('websiteToken', token);
@@ -79,7 +77,7 @@ function AuthCallback() {
       }, 2000);
     }
   }, []);
-  
+
   return (
     <div style={{
       display: 'flex',

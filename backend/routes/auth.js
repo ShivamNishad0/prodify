@@ -99,7 +99,7 @@ router.post('/register', async (req, res) => {
   });
 });
 
-// Login user
+// Login user - Supports both local and Keycloak-linked accounts
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -110,6 +110,22 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
+    // Check if user is Keycloak-linked (cannot login with password)
+    if (user.authProvider === 'keycloak') {
+      return res.status(400).json({ 
+        msg: 'This account uses Keycloak for authentication. Please login with Keycloak.',
+        requiresKeycloak: true,
+        authProvider: 'keycloak'
+      });
+    }
+
+    // Check if user has a password (legacy accounts might not)
+    if (!user.password) {
+      return res.status(400).json({ 
+        msg: 'This account does not have a password set. Please login with Keycloak or contact admin.',
+        requiresKeycloak: true
+      });
+    }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -136,7 +152,8 @@ router.post('/login', async (req, res) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
+            authProvider: user.authProvider || 'local'
           }
         });
       }
@@ -159,6 +176,14 @@ router.post('/forgot-password', async (req, res) => {
       // Don't reveal whether email exists or not for security
       return res.status(200).json({ 
         msg: 'If an account with that email exists, we have sent a password reset link.' 
+      });
+    }
+
+    // Check if user is Keycloak-linked (cannot reset password)
+    if (user.authProvider === 'keycloak') {
+      return res.status(400).json({ 
+        msg: 'This account uses Keycloak for authentication. Please reset your password through Keycloak.',
+        requiresKeycloak: true
       });
     }
 
@@ -200,6 +225,14 @@ router.post('/reset-password/:token', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid or expired reset token' });
     }
 
+    // Check if user is Keycloak-linked (cannot reset password)
+    if (user.authProvider === 'keycloak') {
+      return res.status(400).json({ 
+        msg: 'This account uses Keycloak for authentication. Please reset your password through Keycloak.',
+        requiresKeycloak: true
+      });
+    }
+
     // Hash new password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
@@ -237,7 +270,10 @@ router.get('/verify', async (req, res) => {
       return res.status(401).json({ msg: 'Token is not valid' });
     }
 
-    res.json({ user });
+    res.json({ 
+      user,
+      authProvider: user.authProvider || 'local'
+    });
   } catch (err) {
     console.error(err.message);
     res.status(401).json({ msg: 'Token is not valid' });
@@ -379,6 +415,14 @@ router.put('/password', async (req, res) => {
     // Get user with password
     const user = await User.findById(decoded.user.id);
 
+    // Check if user is Keycloak-linked (cannot change password here)
+    if (user.authProvider === 'keycloak') {
+      return res.status(400).json({ 
+        msg: 'This account uses Keycloak for authentication. Please change your password through Keycloak.',
+        requiresKeycloak: true
+      });
+    }
+
     // Check current password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
@@ -399,3 +443,4 @@ router.put('/password', async (req, res) => {
 });
 
 module.exports = router;
+

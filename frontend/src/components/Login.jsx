@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
@@ -7,11 +6,12 @@ import { useAuth } from '../contexts/AuthContext';
  * ⚛️ Login Component (Two-Column Layout with Form Fields)
  * * This component includes input fields for a basic login form, manages input 
  * state, and simulates a login process upon submission.
+ * * Also supports Keycloak SSO login.
  */
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginWithKeycloak, isKeycloakAvailable } = useAuth();
   
   // 📝 State to manage form input values
   const [formData, setFormData] = useState({
@@ -56,11 +56,30 @@ function Login() {
         navigate("/"); // Redirect staff to dashboard
       }
     } else {
-      setError(result.error);
+      // Check if this is a Keycloak-required error
+      if (result.requiresKeycloak) {
+        setError('This account uses Keycloak. Please login with Keycloak SSO.');
+      } else {
+        setError(result.error);
+      }
     }
     setLoading(false);
   };
 
+  // Handle Keycloak login
+  const handleKeycloakLogin = async () => {
+    setLoading(true);
+    setError('');
+    
+    const result = await loginWithKeycloak();
+    
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(result.error || 'Keycloak login failed');
+    }
+    setLoading(false);
+  };
 
 
   // --- Inline Styles (Consistent with Signup/Two-Column Design) ---
@@ -134,6 +153,24 @@ function Login() {
     borderRadius: "8px",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
+  };
+
+  const keycloakButtonStyle = {
+    width: "100%",
+    padding: "15px",
+    marginTop: "10px",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "white",
+    backgroundColor: "#667eea",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
   };
   
   // Hover effect simulation
@@ -240,6 +277,21 @@ function Login() {
                 >
                     {loading ? 'Logging In...' : 'Log In'}
                 </button>
+                
+                {/* Keycloak SSO Button */}
+                {isKeycloakAvailable && (
+                  <button
+                    type="button"
+                    onClick={handleKeycloakLogin}
+                    style={keycloakButtonStyle}
+                    disabled={loading}
+                    onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = '#5a6fd6')}
+                    onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = '#667eea')}
+                  >
+                    {loading ? 'Loading...' : '🔐 Sign in with Keycloak SSO'}
+                  </button>
+                )}
+                
                 <p style={{textAlign: "center", marginTop: "20px", fontSize: "14px"}}>
                     Don't have an account? <a href="/signup" style={{color: "#3cb2a8", textDecoration: "none"}}>Sign Up</a>
                 </p>
@@ -251,3 +303,4 @@ function Login() {
 }
 
 export default Login;
+

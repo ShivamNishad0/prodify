@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import keycloak from '../config/keycloak';
 
 const WebsiteAuthContext = createContext();
@@ -21,9 +21,9 @@ export const WebsiteAuthProvider = ({ children }) => {
           checkLoginIframe: false,
           flow: 'standard'
         });
-        
+
         setAuthenticated(authenticated);
-        
+
         if (authenticated) {
           const userInfo = await keycloak.loadUserInfo();
           setUser({
@@ -53,7 +53,7 @@ export const WebsiteAuthProvider = ({ children }) => {
       const authenticated = await keycloak.login({
         redirectUri: window.location.origin + '/auth/callback'
       });
-      
+
       if (authenticated) {
         const userInfo = await keycloak.loadUserInfo();
         setUser({
@@ -81,7 +81,7 @@ export const WebsiteAuthProvider = ({ children }) => {
       const authenticated = await keycloak.register({
         redirectUri: window.location.origin + '/auth/callback'
       });
-      
+
       if (authenticated) {
         const userInfo = await keycloak.loadUserInfo();
         setUser({
@@ -138,7 +138,7 @@ export const WebsiteAuthProvider = ({ children }) => {
     try {
       localStorage.setItem('websiteToken', token);
       setAuthenticated(true);
-      
+
       // Verify token with backend
       const response = await fetch('http://localhost:5001/api/auth/verify', {
         headers: {
@@ -146,7 +146,7 @@ export const WebsiteAuthProvider = ({ children }) => {
           'Content-Type': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setUser({
@@ -154,7 +154,7 @@ export const WebsiteAuthProvider = ({ children }) => {
           keycloakToken: token
         });
       }
-      
+
       return { success: true };
     } catch (err) {
       console.error('Callback processing error:', err);
@@ -181,6 +181,10 @@ export const WebsiteAuthProvider = ({ children }) => {
       {children}
     </WebsiteAuthContext.Provider>
   );
+};
+
+export const useWebsiteAuth = () => {
+  return useContext(WebsiteAuthContext);
 };
 
 export default WebsiteAuthContext;
