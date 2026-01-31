@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  FiPlus, FiEdit2, FiTrash2, FiSearch, FiBox, FiTag,
+  FiDollarSign, FiLayers, FiPackage, FiTruck, FiInfo,
+  FiShoppingBag, FiMaximize, FiCheck, FiX, FiImage, FiBriefcase
+} from 'react-icons/fi';
 
 function Products() {
   const { user, token } = useAuth();
@@ -69,7 +74,7 @@ function Products() {
         page: currentPage,
         limit: 10
       });
-      
+
       if (selectedCategory) params.append('category', selectedCategory);
       if (selectedStatus) params.append('status', selectedStatus);
       if (searchTerm) params.append('search', searchTerm);
@@ -131,7 +136,7 @@ function Products() {
 
     try {
       const formDataToSend = new FormData();
-      
+
       Object.keys(formData).forEach(key => {
         if (key === 'photo' && formData[key]) {
           formDataToSend.append('photo', formData[key]);
@@ -155,7 +160,7 @@ function Products() {
       resetForm();
       await fetchProducts();
       await fetchCategories();
-      
+
       setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
       console.error('Error saving product:', err);
@@ -253,18 +258,19 @@ function Products() {
   };
 
   const containerStyle = {
-    padding: '20px',
+    padding: '30px',
     maxWidth: '1400px',
-    margin: '0 auto'
+    margin: '0 auto',
+    minHeight: '90vh'
   };
 
   const cardStyle = {
     background: 'white',
-    borderRadius: '15px',
+    borderRadius: '16px',
     padding: '25px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-    marginBottom: '25px',
-    border: '1px solid #e0e0e0'
+    boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+    border: '1px solid #f1f5f9',
+    marginBottom: '30px'
   };
 
   const buttonStyle = {
@@ -272,131 +278,143 @@ function Products() {
     color: 'white',
     border: 'none',
     padding: '12px 24px',
-    borderRadius: '8px',
+    borderRadius: '12px',
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '600',
-    marginRight: '10px',
-    transition: 'all 0.3s ease'
-  };
-
-  const dangerButtonStyle = {
-    backgroundColor: '#c62828',
-    color: 'white',
-    border: 'none',
-    padding: '8px 16px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '12px',
-    marginRight: '5px',
-    transition: 'all 0.3s ease'
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.2s'
   };
 
   const secondaryButtonStyle = {
-    backgroundColor: '#0d6dfda9',
-    color: 'white',
+    backgroundColor: '#f1f5f9',
+    color: '#475569',
     border: 'none',
-    padding: '8px 16px',
-    borderRadius: '6px',
+    padding: '10px 20px',
+    borderRadius: '10px',
     cursor: 'pointer',
-    fontSize: '12px',
-    marginRight: '5px',
-    transition: 'all 0.3s ease'
+    fontSize: '14px',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.2s'
   };
 
   const inputStyle = {
     width: '100%',
-    padding: '12px',
-    margin: '8px 0',
-    border: '2px solid #e0e0e0',
-    borderRadius: '8px',
-    boxSizing: 'border-box',
+    padding: '12px 16px',
+    borderRadius: '10px',
+    border: '1px solid #e2e8f0',
     fontSize: '14px',
-    transition: 'border-color 0.3s ease'
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    boxSizing: 'border-box'
   };
 
   const labelStyle = {
     display: 'block',
     marginBottom: '8px',
     fontWeight: '600',
-    color: '#333',
-    fontSize: '14px'
+    color: '#475569',
+    fontSize: '13px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.025em'
   };
 
   const sectionTitleStyle = {
-    color: '#3cb2a8',
-    marginBottom: '20px',
     fontSize: '18px',
-    fontWeight: '600',
-    borderBottom: '2px solid #3cb2a8',
-    paddingBottom: '10px'
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
   };
 
   return (
-    <div>
-      <div style={containerStyle}>
-        {/* Header */}
-        <div style={{ 
-          ...cardStyle, 
-          marginBottom: '30px', 
-          background: 'linear-gradient(135deg, #3cb2a8 0%, #2a8a81 100%)', 
-          color: 'white' 
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
-            <div>
-              <h1 style={{ margin: '0 0 10px 0', fontSize: '32px' }}>Products</h1>
-              <p style={{ margin: '0', opacity: '0.9' }}>Manage your product catalog</p>
-            </div>
-            <button 
-              style={{...buttonStyle, backgroundColor: 'rgba(255,255,255,0.2)', border: '2px solid white'}}
-              onClick={() => setShowCreateForm(!showCreateForm)}
-            >
-              {showCreateForm ? 'Cancel' : '+ Add New Product'}
-            </button>
-          </div>
+    <div style={containerStyle}>
+      {/* Header */}
+      < div style={{
+        ...cardStyle,
+        background: 'linear-gradient(135deg, #3cb2a8 0%, #2a8a81 100%)',
+        color: 'white',
+        border: 'none',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }} >
+        <div>
+          <h1 style={{ margin: '0 0 8px 0', fontSize: '32px', fontWeight: '700' }}>Product Catalog</h1>
+          <p style={{ margin: '0', opacity: '0.9', fontSize: '16px' }}>Manage and track your products inventory</p>
         </div>
+        <button
+          style={{ ...buttonStyle, backgroundColor: 'rgba(255,255,255,0.2)', border: '1px solid white' }}
+          onClick={() => {
+            if (showCreateForm) resetForm();
+            else setShowCreateForm(true);
+          }}
+        >
+          {showCreateForm ? <FiX size={18} /> : <FiPlus size={18} />}
+          {showCreateForm ? 'Cancel' : 'Add New Product'}
+        </button>
+      </div >
 
-        {/* Messages */}
-        {error && (
+      {/* Messages */}
+      {
+        error && (
           <div style={{
             ...cardStyle,
-            backgroundColor: '#ffebee',
-            border: '1px solid #ffcdd2',
-            color: '#c62828',
-            padding: '15px',
-            marginBottom: '20px',
-            borderRadius: '8px'
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
           }}>
+            <FiInfo size={20} />
             <strong>Error:</strong> {error}
           </div>
-        )}
+        )
+      }
 
-        {success && (
+      {
+        success && (
           <div style={{
             ...cardStyle,
-            backgroundColor: '#e8f5e8',
-            border: '1px solid #c8e6c9',
-            color: '#2e7d32',
-            padding: '15px',
-            marginBottom: '20px',
-            borderRadius: '8px'
+            backgroundColor: '#f0fdf4',
+            border: '1px solid #bbf7d0',
+            color: '#22c55e',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
           }}>
+            <FiCheck size={20} />
             <strong>Success:</strong> {success}
           </div>
-        )}
+        )
+      }
 
-        {/* Create/Edit Product Form */}
-        {showCreateForm && (
+      {/* Create/Edit Product Form */}
+      {
+        showCreateForm && (
           <div style={cardStyle}>
             <h3 style={sectionTitleStyle}>
-              {editingProduct ? 'Edit Product' : 'Add New Product'}
+              <div style={{ backgroundColor: 'rgba(60, 178, 168, 0.1)', color: '#3cb2a8', padding: '10px', borderRadius: '10px' }}>
+                {editingProduct ? <FiEdit2 /> : <FiPlus />}
+              </div>
+              {editingProduct ? 'Update Product Information' : 'Register New Product'}
             </h3>
 
             <form onSubmit={handleSubmit}>
               {/* Basic Information */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>📦 Basic Information</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+              <div style={{ marginBottom: '40px' }}>
+                <h4 style={{ color: '#64748b', fontSize: '14px', fontWeight: '700', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
+                  <FiPackage style={{ marginRight: '8px' }} /> CORE DETAILS
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
                   <div>
                     <label style={labelStyle}>Product Title *</label>
                     <input
@@ -405,30 +423,8 @@ function Products() {
                       value={formData.title}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="Enter product title"
+                      placeholder="e.g. Premium Wireless Headphones"
                       required
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>SKU</label>
-                    <input
-                      type="text"
-                      name="sku"
-                      value={formData.sku}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="Stock Keeping Unit"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Barcode</label>
-                    <input
-                      type="text"
-                      name="barcode"
-                      value={formData.barcode}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="Product barcode"
                     />
                   </div>
                   <div>
@@ -439,7 +435,7 @@ function Products() {
                       value={formData.category}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="Product category"
+                      placeholder="Select or enter category"
                       list="categories"
                       required
                     />
@@ -450,219 +446,155 @@ function Products() {
                     </datalist>
                   </div>
                   <div>
-                    <label style={labelStyle}>Subcategory</label>
+                    <label style={labelStyle}>SKU Code</label>
                     <input
                       type="text"
-                      name="subcategory"
-                      value={formData.subcategory}
+                      name="sku"
+                      value={formData.sku}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="Sub category"
+                      placeholder="Stock Keeping Unit"
                     />
                   </div>
                   <div>
-                    <label style={labelStyle}>Brand</label>
+                    <label style={labelStyle}>Brand Name</label>
                     <input
                       type="text"
                       name="brand"
                       value={formData.brand}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="Brand name"
+                      placeholder="Manufacturer/Brand"
                     />
                   </div>
                 </div>
 
-                <div style={{ marginTop: '15px' }}>
-                  <label style={labelStyle}>Description</label>
+                <div style={{ marginTop: '20px' }}>
+                  <label style={labelStyle}>Product Description</label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
-                    placeholder="Product description"
+                    style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }}
+                    placeholder="Detailed information about the product..."
                     rows={4}
                   />
                 </div>
               </div>
 
-              {/* Pricing & Inventory */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>💰 Pricing & Inventory</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                  <div>
-                    <label style={labelStyle}>Price *</label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
+              {/* Pricing & Logic */}
+              <div style={{ marginBottom: '40px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '40px' }}>
+                <div>
+                  <h4 style={{ color: '#64748b', fontSize: '14px', fontWeight: '700', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
+                    <FiDollarSign style={{ marginRight: '8px' }} /> PRICING & STOCK
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div>
+                      <label style={labelStyle}>Base Price *</label>
+                      <div style={{ position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>Rs.</span>
+                        <input
+                          type="number"
+                          name="price"
+                          value={formData.price}
+                          onChange={handleInputChange}
+                          style={{ ...inputStyle, paddingLeft: '45px' }}
+                          placeholder="0.00"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>In-Stock Quantity *</label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleInputChange}
+                        style={inputStyle}
+                        placeholder="0"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label style={labelStyle}>Discount Price</label>
-                    <input
-                      type="number"
-                      name="discountPrice"
-                      value={formData.discountPrice}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Quantity *</label>
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={formData.quantity}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0"
-                      min="0"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Status</label>
+                  <div style={{ marginTop: '20px' }}>
+                    <label style={labelStyle}>Inventory Status</label>
                     <select
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
                       style={inputStyle}
                     >
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="active">Available (Active)</option>
+                      <option value="inactive">Draft (Inactive)</option>
                       <option value="out_of_stock">Out of Stock</option>
                       <option value="discontinued">Discontinued</option>
                     </select>
                   </div>
                 </div>
-              </div>
 
-              {/* Product Attributes */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>🎨 Attributes</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
+                <div>
+                  <h4 style={{ color: '#64748b', fontSize: '14px', fontWeight: '700', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
+                    <FiImage style={{ marginRight: '8px' }} /> ASSETS & TAGS
+                  </h4>
                   <div>
-                    <label style={labelStyle}>Color</label>
-                    <input
-                      type="text"
-                      name="color"
-                      value={formData.color}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="e.g., Red"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Size</label>
-                    <input
-                      type="text"
-                      name="size"
-                      value={formData.size}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="e.g., M, L, XL"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Material</label>
-                    <input
-                      type="text"
-                      name="material"
-                      value={formData.material}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="e.g., Cotton, Leather"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Weight & Dimensions */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>📏 Weight & Dimensions</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
-                  <div>
-                    <label style={labelStyle}>Weight</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <label style={labelStyle}>Product Photo</label>
+                    <div
+                      onClick={() => fileInputRef.current.click()}
+                      style={{
+                        border: '2px dashed #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        backgroundColor: '#f8fafc'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.borderColor = '#3cb2a8'}
+                      onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+                    >
+                      <FiImage size={24} style={{ color: '#94a3b8', marginBottom: '8px' }} />
+                      <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
+                        {formData.photo ? formData.photo.name : 'Click to upload image'}
+                      </p>
                       <input
-                        type="number"
-                        name="weightValue"
-                        value={formData.weightValue}
-                        onChange={handleInputChange}
-                        style={{ ...inputStyle, margin: 0 }}
-                        placeholder="0"
-                        min="0"
-                        step="0.01"
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        accept="image/*"
                       />
-                      <select
-                        name="weightUnit"
-                        value={formData.weightUnit}
-                        onChange={handleInputChange}
-                        style={{ ...inputStyle, margin: 0, width: '80px' }}
-                      >
-                        <option value="kg">kg</option>
-                        <option value="g">g</option>
-                        <option value="lb">lb</option>
-                        <option value="oz">oz</option>
-                      </select>
                     </div>
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Length</label>
-                    <input
-                      type="number"
-                      name="length"
-                      value={formData.length}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Width</label>
-                    <input
-                      type="number"
-                      name="width"
-                      value={formData.width}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Height</label>
-                    <input
-                      type="number"
-                      name="height"
-                      value={formData.height}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="0"
-                      min="0"
-                      step="0.01"
-                    />
+                    {formData.existingPhoto && (
+                      <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <img
+                          src={formData.existingPhoto.startsWith('http') ? formData.existingPhoto : `http://localhost:5001${formData.existingPhoto}`}
+                          alt="Current"
+                          style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+                        />
+                        <label style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ef4444' }}>
+                          <input
+                            type="checkbox"
+                            checked={!formData.existingPhoto}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              existingPhoto: e.target.checked ? '' : prev.existingPhoto
+                            }))}
+                          />
+                          Remove Current
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Vendor Information */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>🏪 Vendor Information</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+              {/* Vendor & Attributes Section */}
+              <div style={{ marginBottom: '40px' }}>
+                <h4 style={{ color: '#64748b', fontSize: '14px', fontWeight: '700', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
+                  <FiBriefcase style={{ marginRight: '8px' }} /> VENDOR & ATTRIBUTES
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                   <div>
                     <label style={labelStyle}>Vendor Name</label>
                     <input
@@ -671,353 +603,276 @@ function Products() {
                       value={formData.vendorName}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="Vendor name"
+                      placeholder="Full Company Name"
                     />
                   </div>
                   <div>
-                    <label style={labelStyle}>Vendor Email</label>
-                    <input
-                      type="email"
-                      name="vendorEmail"
-                      value={formData.vendorEmail}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="vendor@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Vendor Phone</label>
-                    <input
-                      type="text"
-                      name="vendorPhone"
-                      value={formData.vendorPhone}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="+1 234 567 890"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Tags & Photo */}
-              <div style={{ marginBottom: '30px' }}>
-                <h4 style={{ color: '#555', marginBottom: '15px' }}>🏷️ Tags & Photo</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                  <div>
-                    <label style={labelStyle}>Tags (comma separated)</label>
+                    <label style={labelStyle}>Attributes</label>
                     <input
                       type="text"
                       name="tags"
                       value={formData.tags}
                       onChange={handleInputChange}
                       style={inputStyle}
-                      placeholder="e.g., summer, sale, new"
+                      placeholder="Tags (comma separated)"
                     />
                   </div>
                   <div>
-                    <label style={labelStyle}>Product Photo</label>
+                    <label style={labelStyle}>Material / Quality</label>
                     <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
+                      type="text"
+                      name="material"
+                      value={formData.material}
+                      onChange={handleInputChange}
                       style={inputStyle}
-                      accept="image/*"
+                      placeholder="e.g. Leather, Plastic"
                     />
-                    {formData.existingPhoto && (
-                      <div style={{ marginTop: '10px' }}>
-                        <img 
-                          src={formData.existingPhoto.startsWith('http') ? formData.existingPhoto : `http://localhost:5001${formData.existingPhoto}`}
-                          alt="Current product"
-                          style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '8px' }}
-                        />
-                        <label style={{ marginLeft: '15px', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={!formData.existingPhoto}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              existingPhoto: e.target.checked ? '' : prev.existingPhoto
-                            }))}
-                            style={{ marginRight: '5px' }}
-                          />
-                          Remove current photo
-                        </label>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
-                <button 
-                  type="submit" 
-                  style={buttonStyle}
-                >
-                  {editingProduct ? 'Update Product' : 'Create Product'}
-                </button>
-                <button 
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', borderTop: '1px solid #f1f5f9', paddingTop: '30px' }}>
+                <button
                   type="button"
                   style={secondaryButtonStyle}
                   onClick={resetForm}
                 >
                   Cancel
                 </button>
+                <button
+                  type="submit"
+                  style={buttonStyle}
+                >
+                  <FiCheck /> {editingProduct ? 'Save Changes' : 'Create Product'}
+                </button>
               </div>
             </form>
           </div>
-        )}
+        )
+      }
 
-        {/* Filters */}
-        <div style={cardStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
-            <h3 style={{ color: '#3cb2a8', margin: '0', fontSize: '24px' }}>
-              All Products ({totalProducts})
+      {/* List Section */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', marginBottom: '30px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '24px', fontWeight: '700', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              Product List
+              <span style={{ fontSize: '14px', backgroundColor: 'rgba(60, 178, 168, 0.1)', color: '#3cb2a8', padding: '4px 12px', borderRadius: '20px' }}>
+                {totalProducts} Items
+              </span>
             </h3>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative' }}>
+              <FiSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="🔍 Search products..."
+                placeholder="Search catalog..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ ...inputStyle, maxWidth: '250px', margin: 0 }}
+                style={{ ...inputStyle, paddingLeft: '40px', width: '240px' }}
               />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                style={{ ...inputStyle, maxWidth: '150px', margin: 0 }}
-              >
-                <option value="">All Categories</option>
-                {categories.map((cat, index) => (
-                  <option key={index} value={cat}>{cat}</option>
-                ))}
-              </select>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                style={{ ...inputStyle, maxWidth: '150px', margin: 0 }}
-              >
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="out_of_stock">Out of Stock</option>
-              </select>
-              <button
-                style={secondaryButtonStyle}
-                onClick={fetchProducts}
-                title="Refresh Products"
-              >
-                🔄 Refresh
-              </button>
             </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{ ...inputStyle, width: '160px' }}
+            >
+              <option value="">Categories</option>
+              {categories.map((cat, index) => (
+                <option key={index} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
+        </div>
 
-          {/* Products Table */}
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '10px' }}>⏳</div>
-              <p>Loading products...</p>
-            </div>
-          ) : products.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '10px' }}>📦</div>
-              <p style={{ color: '#666' }}>
-                {searchTerm || selectedCategory || selectedStatus 
-                  ? 'No products match your search criteria.' 
-                  : 'No products found. Add your first product!'}
-              </p>
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f8f9fa' }}>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Photo</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Title</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>SKU</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Category</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Price</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Qty</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Status</th>
-                    <th style={{ padding: '15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product._id} style={{ 
-                      borderBottom: '1px solid #eee',
-                      transition: 'background-color 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <td style={{ padding: '15px' }}>
+        {/* Table Area */}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3cb2a8', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }}></div>
+            <p style={{ color: '#64748b' }}>Loading products catalog...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '80px 0', border: '2px dashed #e2e8f0', borderRadius: '16px' }}>
+            <FiBox size={48} style={{ color: '#cbd5e1', marginBottom: '16px' }} />
+            <h3 style={{ color: '#64748b', margin: '0' }}>No products found</h3>
+            <p style={{ color: '#94a3b8', margin: '8px 0 0 0' }}>{searchTerm ? 'No results for your current filters' : 'Start by adding your first product'}</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+              <thead>
+                <tr style={{ textAlign: 'left' }}>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>ITEM</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>SKU</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>CATEGORY</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>STOCK</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>PRICE</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>STATUS</th>
+                  <th style={{ padding: '12px 20px', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product._id} style={{ backgroundColor: '#ffffff', transition: 'transform 0.2s' }}>
+                    <td style={{ padding: '16px 20px', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', borderLeft: '1px solid #f1f5f9', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         {product.photo ? (
-                          <img 
+                          <img
                             src={product.photo.startsWith('http') ? product.photo : `http://localhost:5001${product.photo}`}
                             alt={product.title}
-                            style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }}
+                            style={{ width: '44px', height: '44px', borderRadius: '10px', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
                           />
                         ) : (
-                          <div style={{ 
-                            width: '50px', 
-                            height: '50px', 
-                            borderRadius: '8px', 
-                            backgroundColor: '#e0e0e0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}>
-                            📷
+                          <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+                            <FiImage size={24} />
                           </div>
                         )}
-                      </td>
-                      <td style={{ padding: '15px', fontWeight: '500' }}>{product.title}</td>
-                      <td style={{ padding: '15px', color: '#666' }}>{product.sku || '-'}</td>
-                      <td style={{ padding: '15px', color: '#666' }}>{product.category}</td>
-                      <td style={{ padding: '15px', fontWeight: '600' }}>
-                        ${product.price?.toFixed(2)}
-                        {product.discountPrice > 0 && (
-                          <span style={{ 
-                            color: '#c62828', 
-                            fontSize: '12px', 
-                            marginLeft: '5px',
-                            textDecoration: 'line-through'
-                          }}>
-                            ${product.discountPrice?.toFixed(2)}
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <span style={{ 
-                          fontWeight: '600',
-                          color: product.quantity <= 10 ? '#c62828' : product.quantity <= 50 ? '#f57c00' : '#2e7d32'
-                        }}>
-                          {product.quantity}
-                        </span>
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <span style={{
-                          padding: '6px 12px',
-                          borderRadius: '20px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          backgroundColor: 
-                            product.status === 'active' ? '#e8f5e8' : 
-                            product.status === 'out_of_stock' ? '#ffebee' : '#f3e5f5',
-                          color: 
-                            product.status === 'active' ? '#2e7d32' : 
-                            product.status === 'out_of_stock' ? '#c62828' : '#6a1b9a'
-                        }}>
-                          {product.status === 'out_of_stock' ? 'Out of Stock' : 
-                           product.status.charAt(0).toUpperCase() + product.status.slice(1)}
-                        </span>
-                      </td>
-                      <td style={{ padding: '15px' }}>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                          <button
-                            style={secondaryButtonStyle}
-                            onClick={() => handleEdit(product)}
-                            title="Edit Product"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            style={dangerButtonStyle}
-                            onClick={() => handleDeleteClick(product._id)}
-                            title="Delete Product"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                        <span style={{ fontWeight: '600', color: '#1e293b' }}>{product.title}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '16px 20px', color: '#64748b', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{product.sku || 'N/A'}</td>
+                    <td style={{ padding: '16px 20px', color: '#64748b', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>{product.category}</td>
+                    <td style={{ padding: '16px 20px', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
+                      <span style={{
+                        fontWeight: '700',
+                        color: product.quantity <= 10 ? '#ef4444' : product.quantity <= 50 ? '#f59e0b' : '#22c55e',
+                        backgroundColor: product.quantity <= 10 ? '#fef2f2' : product.quantity <= 50 ? '#fffbeb' : '#f0fdf4',
+                        padding: '4px 10px',
+                        borderRadius: '8px'
+                      }}>
+                        {product.quantity}
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px 20px', fontWeight: '700', color: '#1e293b', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
+                      Rs. {product.price?.toLocaleString()}
+                    </td>
+                    <td style={{ padding: '16px 20px', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
+                      <span style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        textTransform: 'uppercase',
+                        backgroundColor:
+                          product.status === 'active' ? '#f0fdf4' :
+                            product.status === 'out_of_stock' ? '#fef2f2' : '#f8fafc',
+                        color:
+                          product.status === 'active' ? '#22c55e' :
+                            product.status === 'out_of_stock' ? '#ef4444' : '#64748b'
+                      }}>
+                        {product.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px 20px', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9', borderRight: '1px solid #f1f5f9', borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => handleEdit(product)}
+                          style={{ padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: '#f1f5f9', color: '#3b82f6', cursor: 'pointer' }}
+                        >
+                          <FiEdit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(product._id)}
+                          style={{ padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: '#fef2f2', color: '#ef4444', cursor: 'pointer' }}
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '10px' }}>
-              <button
-                style={{ ...buttonStyle, opacity: currentPage === 1 ? 0.5 : 1 }}
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <span style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                padding: '0 20px',
-                fontWeight: '600'
-              }}>
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                style={{ ...buttonStyle, opacity: currentPage === totalPages ? 0.5 : 1 }}
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '40px' }}>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{ ...secondaryButtonStyle, padding: '8px' }}
+            >
+              <FiChevronLeft size={20} />
+            </button>
+            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '600' }}>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{ ...secondaryButtonStyle, padding: '8px' }}
+            >
+              <FiChevronRight size={20} />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
+      {/* Delete Confirmation Overlay */}
+      {
+        showDeleteConfirm && (
           <div style={{
-            background: 'white',
-            padding: '30px',
-            borderRadius: '15px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-            maxWidth: '400px',
-            textAlign: 'center'
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2000
           }}>
-            <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚠️</div>
-            <h3 style={{ color: '#e74c3c', marginBottom: '15px' }}>Confirm Delete</h3>
-            <p style={{ marginBottom: '25px', color: '#666' }}>
-              Are you sure you want to delete this product? This action cannot be undone.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button
-                style={dangerButtonStyle}
-                onClick={handleDelete}
-              >
-                Delete Product
-              </button>
-              <button
-                style={secondaryButtonStyle}
-                onClick={() => {
-                  setShowDeleteConfirm(false);
-                  setProductToDelete(null);
-                }}
-              >
-                Cancel
-              </button>
+            <div style={{
+              background: 'white',
+              padding: '40px',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              maxWidth: '440px',
+              width: '90%',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                width: '64px', height: '64px', backgroundColor: '#fee2e2', color: '#ef4444',
+                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 24px'
+              }}>
+                <FiTrash2 size={32} />
+              </div>
+              <h3 style={{ fontSize: '24px', fontWeight: '800', color: '#1e293b', margin: '0 0 12px 0' }}>Confirm Deletion</h3>
+              <p style={{ color: '#64748b', marginBottom: '32px', lineHeight: '1.6' }}>
+                Are you sure you want to remove this product from the catalog? This operation cannot be undone.
+              </p>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  style={{ ...secondaryButtonStyle, flex: 1, justifyContent: 'center', padding: '14px' }}
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  style={{ ...buttonStyle, flex: 1, justifyContent: 'center', backgroundColor: '#ef4444', padding: '14px' }}
+                  onClick={handleDelete}
+                >
+                  Yes, Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+
+      {/* Styles for Animations */}
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div >
   );
 }
 
 export default Products;
-

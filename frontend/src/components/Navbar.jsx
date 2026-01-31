@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 function Navbar() {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navbarStyle = {
         position: "sticky",
@@ -92,7 +92,7 @@ function Navbar() {
     return (
         <nav style={navbarStyle}>
             <Link to="/" style={{ ...logoStyle, textDecoration: "none" }}>
-                <h2 style={{ margin: 0, color: "#3cb2a8 "}}>prodify</h2>
+                <h2 style={{ margin: 0, color: "#3cb2a8 " }}>prodify</h2>
             </Link>
 
 
@@ -111,56 +111,61 @@ function Navbar() {
                         <FaBell size={20} />
                     </Link>
                 </li>
-        
+
 
 
                 {/* Profile (Circle Icon with Dropdown) */}
                 <li style={{ position: "relative" }}>
                     <div
                         style={profileIconStyle}
+                        onMouseEnter={() => setIsDropdownOpen(true)}
+                        onMouseLeave={() => setIsDropdownOpen(false)}
                     >
+                        {user?.avatar ? (
+                            <img
+                                src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5001${user.avatar}`}
+                                alt="Profile"
+                                onClick={() => navigate('/profile')}
+                                style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer", border: "2px solid #3cb2a8" }}
+                            />
+                        ) : (
+                            <FaUserCircle
+                                size={40}
+                                onClick={() => navigate('/profile')}
+                                style={{ cursor: "pointer", color: "#3cb2a8" }}
+                            />
+                        )}
 
-                        <FaUserCircle 
-                            size={40} 
-                            onClick={() => navigate('/profile')}
-                            onMouseEnter={() => setIsDropdownOpen(true)}
-                        />
-                        
                         {/* Dropdown Menu */}
                         {isDropdownOpen && (
-                            <div 
-                                style={dropdownStyle}
-                                onMouseEnter={() => setIsDropdownOpen(true)}
-                                onMouseLeave={() => setIsDropdownOpen(false)}
-                            >
-
-                                <div 
+                            <div style={dropdownStyle}>
+                                <div style={{ padding: "15px", borderBottom: "1px solid #f1f5f9", textAlign: "center" }}>
+                                    <div style={{ fontWeight: "bold", color: "#333", fontSize: "14px" }}>{user?.name || "User"}</div>
+                                    <div style={{ fontSize: "12px", color: "#64748b" }}>{user?.email || "Guest"}</div>
+                                </div>
+                                <div
                                     style={dropdownItemStyle}
                                     onMouseEnter={(e) => e.target.style.backgroundColor = "#f5f5f5"}
                                     onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
+                                    onClick={() => {
                                         navigate('/profile');
                                         setIsDropdownOpen(false);
                                     }}
                                 >
-                                    <FaUserCircle size={16} />
+                                    <FaUserCircle size={16} color="#3cb2a8" />
                                     Profile
                                 </div>
-                                <div 
+                                <div
                                     style={dropdownItemStyle}
                                     onMouseEnter={(e) => e.target.style.backgroundColor = "#f5f5f5"}
                                     onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
+                                    onClick={() => {
                                         logout();
                                         navigate('/login');
                                         setIsDropdownOpen(false);
                                     }}
                                 >
-                                    <FaSignOutAlt size={16} />
+                                    <FaSignOutAlt size={16} color="#ef4444" />
                                     Logout
                                 </div>
                             </div>

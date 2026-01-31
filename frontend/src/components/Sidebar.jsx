@@ -25,7 +25,7 @@ function Sidebar({ isOpen }) {
     ];
 
     // Add admin panel for admin users only
-    const menuItems = user?.role === 'admin' 
+    const menuItems = user?.role === 'admin'
         ? [...baseMenuItems, { name: "Admin Panel", icon: <FaUserShield />, path: "/admin" }]
         : baseMenuItems;
 
@@ -44,22 +44,42 @@ function Sidebar({ isOpen }) {
     return (
         <div style={sideBarStyle}>
             {/* USER INFO */}
-            <div 
-                onClick={() => navigate("/profile")} 
+            <div
+                onClick={() => navigate("/profile")}
                 style={{
                     cursor: "pointer",
-                    marginBottom: "20px",
+                    marginBottom: "30px",
                     display: "flex",
                     alignItems: "center",
-                    gap: "10px",
-                    color: "#fff"
+                    gap: "12px",
+                    color: "#fff",
+                    padding: "5px",
+                    borderRadius: "10px",
+                    transition: "background 0.2s"
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             >
-                <FaUsers size={22} />
+                {user?.avatar ? (
+                    <img
+                        src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5001${user.avatar}`}
+                        alt="Profile"
+                        style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "2px solid #3cb2a8" }}
+                    />
+                ) : (
+                    <div style={{ width: "32px", height: "32px", background: "#3cb2a8", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "bold" }}>
+                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                )}
+
                 {isOpen && (
-                    <div>
-                        <div><b>username</b></div>
-                        <div style={{ fontSize: "14px", color: "gray" }}>email</div>
+                    <div style={{ overflow: "hidden" }}>
+                        <div style={{ fontWeight: "700", fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {user?.name || "User"}
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {user?.email || "Guest"}
+                        </div>
                     </div>
                 )}
             </div>
