@@ -1,38 +1,57 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const customerSchema = new mongoose.Schema({
+const Customer = sequelize.define('Customer', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   name: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   email: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
+    validate: {
+      isEmail: true,
+    },
   },
   phone: {
-    type: String,
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String,
+    type: DataTypes.JSONB,
+    defaultValue: {
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: '',
+    },
   },
   status: {
-    type: String,
-    enum: ['active', 'inactive', 'prospect'],
-    default: 'active',
+    type: DataTypes.ENUM('active', 'inactive', 'prospect'),
+    defaultValue: 'active',
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model('Customer', customerSchema);
+Customer.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  return values;
+};
+
+module.exports = Customer;

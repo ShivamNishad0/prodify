@@ -2,9 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Op } = require('sequelize');
 const auth = require('../middleware/auth');
 const adminAuth = require('../middleware/adminAuth');
 const Product = require('../models/Product');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -52,29 +54,28 @@ router.get('/', auth, async (req, res) => {
       sortOrder = 'desc'
     } = req.query;
 
-    const query = {};
-
-    if (category) query.category = category;
-    if (status) query.status = status;
+    const where = {};
+    if (category) where.category = category;
+    if (status) where.status = status;
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { sku: { $regex: search, $options: 'i' } },
-        { brand: { $regex: search, $options: 'i' } }
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } },
+        { sku: { [Op.iLike]: `%${search}%` } },
+        { brand: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
-    const sortOptions = {};
-    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    const sortOrderOption = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+    const products = await Product.findAll({
+      where,
+      order: [[sortBy, sortOrderOption]],
+      limit: parseInt(limit),
+      offset: (parseInt(page) - 1) * parseInt(limit),
+      include: [{ model: User, as: 'creatorUser', attributes: ['id', 'name', 'email'] }]
+    });
 
-    const products = await Product.find(query)
-      .sort(sortOptions)
-      .limit(parseInt(limit))
-      .skip((parseInt(page) - 1) * parseInt(limit))
-      .populate('createdBy', 'name email');
-
-    const total = await Product.countDocuments(query);
+    const total = await Product.count({ where });
 
     res.json({
       products,
@@ -91,8 +92,9 @@ router.get('/', auth, async (req, res) => {
 // Get product by ID
 router.get('/:id', auth, async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate('createdBy', 'name email');
+    const product = await Product.findByPk(req.params.id, {
+      include: [{ model: User, as: 'creatorUser', attributes: ['id', 'name', 'email'] }]
+    });
 
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
@@ -105,9 +107,6 @@ router.get('/:id', auth, async (req, res) => {
     res.json(product);
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Product not found' });
-    }
     res.status(500).send('Server error');
   }
 });
@@ -145,7 +144,7 @@ router.post('/', adminAuth, upload.single('photo'), async (req, res) => {
 
     // Check for duplicate SKU
     if (sku) {
-      const existingProduct = await Product.findOne({ sku });
+      const existingProduct = await Product.findOne({ where: { sku } });
       if (existingProduct) {
         return res.status(400).json({ msg: 'Product with this SKU already exists' });
       }
@@ -236,7 +235,12 @@ router.put('/:id', adminAuth, upload.single('photo'), async (req, res) => {
 
     // Check for duplicate SKU (excluding current product)
     if (sku) {
-      const existingProduct = await Product.findOne({ sku, _id: { $ne: req.params.id } });
+      const existingProduct = await Product.findOne({
+        where: {
+          sku,
+          id: { [Op.ne]: req.params.id }
+        }
+      });
       if (existingProduct) {
         return res.status(400).json({ msg: 'Product with this SKU already exists' });
       }
@@ -284,15 +288,11 @@ router.put('/:id', adminAuth, upload.single('photo'), async (req, res) => {
       updateData.photo = existingPhoto;
     }
 
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
+    const product = await Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
     }
+    await product.update(updateData);
 
     res.json(product);
   } catch (err) {
@@ -307,12 +307,12 @@ router.put('/:id', adminAuth, upload.single('photo'), async (req, res) => {
 // Delete product
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-
+    const product = await Product.findByPk(req.params.id);
+ 
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
     }
-
+ 
     // Delete associated photo file
     if (product.photo) {
       const photoPath = path.join(__dirname, '..', product.photo);
@@ -320,8 +320,8 @@ router.delete('/:id', adminAuth, async (req, res) => {
         fs.unlinkSync(photoPath);
       }
     }
-
-    await Product.findByIdAndDelete(req.params.id);
+ 
+    await product.destroy();
     res.json({ msg: 'Product deleted successfully' });
   } catch (err) {
     console.error(err.message);
@@ -332,7 +332,11 @@ router.delete('/:id', adminAuth, async (req, res) => {
 // Get product categories
 router.get('/meta/categories', auth, async (req, res) => {
   try {
-    const categories = await Product.distinct('category');
+    const products = await Product.findAll({
+      attributes: ['category'],
+      group: ['category']
+    });
+    const categories = products.map(p => p.category).filter(Boolean);
     res.json(categories);
   } catch (err) {
     console.error(err.message);
@@ -343,9 +347,12 @@ router.get('/meta/categories', auth, async (req, res) => {
 // Get low stock products
 router.get('/meta/low-stock', auth, async (req, res) => {
   try {
-    const products = await Product.find({
-      $expr: { $lte: ['$quantity', 10] }
-    }).sort({ quantity: 1 });
+    const products = await Product.findAll({
+      where: {
+        quantity: { [Op.lte]: 10 }
+      },
+      order: [['quantity', 'ASC']]
+    });
     res.json(products);
   } catch (err) {
     console.error(err.message);
@@ -358,19 +365,14 @@ router.post('/bulk/stock', adminAuth, async (req, res) => {
   try {
     const { updates } = req.body; // Array of { id, quantity }
 
-    const bulkOps = updates.map(update => ({
-      updateOne: {
-        filter: { _id: update.id },
-        update: { 
-          $set: { 
-            quantity: update.quantity,
-            updatedAt: Date.now()
-          }
-        }
-      }
-    }));
-
-    await Product.bulkWrite(bulkOps);
+    await Promise.all(
+      updates.map(update =>
+        Product.update(
+          { quantity: update.quantity },
+          { where: { id: update.id } }
+        )
+      )
+    );
     res.json({ msg: 'Stock updated successfully' });
   } catch (err) {
     console.error(err.message);

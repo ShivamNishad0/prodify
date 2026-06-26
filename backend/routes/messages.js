@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Message = require('../models/Message');
@@ -10,9 +11,13 @@ const User = require('../models/User');
 router.get('/users', auth, async (req, res) => {
   try {
     // Return all users except the current one
-    const users = await User.find({ _id: { $ne: req.user.id } })
-      .select('name email')
-      .sort({ name: 1 });
+    const users = await User.findAll({
+      where: {
+        id: { [Op.ne]: req.user.id }
+      },
+      attributes: ['id', 'name', 'email'],
+      order: [['name', 'ASC']]
+    });
     res.json(users);
   } catch (err) {
     console.error(err.message);
@@ -25,13 +30,15 @@ router.get('/users', auth, async (req, res) => {
 // @access  Private
 router.get('/:userId', auth, async (req, res) => {
   try {
-    const messages = await Message.find({
-      $or: [
-        { sender: req.user.id, recipient: req.params.userId },
-        { sender: req.params.userId, recipient: req.user.id },
-      ],
-    })
-      .sort({ createdAt: 1 }); // Oldest first
+    const messages = await Message.findAll({
+      where: {
+        [Op.or]: [
+          { senderId: req.user.id, recipientId: req.params.userId },
+          { senderId: req.params.userId, recipientId: req.user.id },
+        ],
+      },
+      order: [['createdAt', 'ASC']] // Oldest first
+    });
 
     res.json(messages);
   } catch (err) {
@@ -47,13 +54,12 @@ router.post('/', auth, async (req, res) => {
   const { recipient, content } = req.body;
 
   try {
-    const newMessage = new Message({
-      sender: req.user.id,
-      recipient,
+    const message = await Message.create({
+      senderId: req.user.id,
+      recipientId: recipient,
       content,
     });
 
-    const message = await newMessage.save();
     res.json(message);
   } catch (err) {
     console.error(err.message);

@@ -1,13 +1,18 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const Inventory = require('../models/Inventory');
+const Product = require('../models/Product');
 
 const router = express.Router();
 
 // Get all inventory items
 router.get('/', auth, async (req, res) => {
   try {
-    const inventory = await Inventory.find().populate('product', 'name');
+    const inventory = await Inventory.findAll({
+      include: [
+        { model: Product, as: 'product', attributes: ['id', 'title', 'price', 'category'] }
+      ]
+    });
     res.json(inventory);
   } catch (err) {
     console.error(err.message);
@@ -18,7 +23,11 @@ router.get('/', auth, async (req, res) => {
 // Get inventory item by ID
 router.get('/:id', auth, async (req, res) => {
   try {
-    const item = await Inventory.findById(req.params.id).populate('product', 'name');
+    const item = await Inventory.findByPk(req.params.id, {
+      include: [
+        { model: Product, as: 'product', attributes: ['id', 'title', 'price', 'category'] }
+      ]
+    });
     if (!item) {
       return res.status(404).json({ msg: 'Inventory item not found' });
     }
@@ -33,12 +42,18 @@ router.get('/:id', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const { product, quantity, location } = req.body;
-    const item = new Inventory({
-      product,
+    
+    // Check product exists
+    const prodObj = await Product.findByPk(product);
+    if (!prodObj) {
+      return res.status(404).json({ msg: 'Product not found' });
+    }
+
+    const item = await Inventory.create({
+      productId: product,
       quantity,
       location,
     });
-    await item.save();
     res.json(item);
   } catch (err) {
     console.error(err.message);
@@ -50,14 +65,17 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     const { product, quantity, location } = req.body;
-    const item = await Inventory.findByIdAndUpdate(
-      req.params.id,
-      { product, quantity, location, updatedAt: Date.now() },
-      { new: true }
-    );
+    const item = await Inventory.findByPk(req.params.id);
     if (!item) {
       return res.status(404).json({ msg: 'Inventory item not found' });
     }
+
+    await item.update({
+      productId: product,
+      quantity,
+      location,
+    });
+
     res.json(item);
   } catch (err) {
     console.error(err.message);
@@ -68,10 +86,11 @@ router.put('/:id', auth, async (req, res) => {
 // Delete inventory item
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const item = await Inventory.findByIdAndDelete(req.params.id);
+    const item = await Inventory.findByPk(req.params.id);
     if (!item) {
       return res.status(404).json({ msg: 'Inventory item not found' });
     }
+    await item.destroy();
     res.json({ msg: 'Inventory item deleted' });
   } catch (err) {
     console.error(err.message);

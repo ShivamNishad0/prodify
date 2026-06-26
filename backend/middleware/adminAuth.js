@@ -18,7 +18,9 @@ module.exports = async function (req, res, next) {
     const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
 
     // Get full user data including role
-    const user = await User.findById(decoded.user.id).select('-password');
+    const user = await User.findByPk(decoded.user.id, {
+      attributes: { exclude: ['password'] }
+    });
     
     if (!user) {
       console.log('AdminAuth middleware: User not found from token');

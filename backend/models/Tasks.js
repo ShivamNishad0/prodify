@@ -1,67 +1,93 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
+const User = require('./User');
 
-const taskSchema = new mongoose.Schema({
+const Task = sequelize.define('Task', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   title: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   description: {
-    type: String,
-    default: '',
+    type: DataTypes.TEXT,
+    defaultValue: '',
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
-  assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  assignedToId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
-  assignedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  assignedById: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
-  parentTask: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Task',
-    default: null,
+  parentTaskId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   status: {
-    type: String,
-    enum: ['Pending', 'In Progress', 'Completed'],
-    default: 'Pending',
+    type: DataTypes.ENUM('Pending', 'In Progress', 'Completed'),
+    defaultValue: 'Pending',
   },
   priority: {
-    type: String,
-    enum: ['Low', 'Medium', 'High'],
-    default: 'Medium',
+    type: DataTypes.ENUM('Low', 'Medium', 'High'),
+    defaultValue: 'Medium',
   },
   progress: {
-    type: Number,
-    min: 0,
-    max: 100,
-    default: 0,
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    validate: {
+      min: 0,
+      max: 100,
+    },
   },
   color: {
-    type: String,
-    default: '#fff740',
+    type: DataTypes.STRING,
+    defaultValue: '#fff740',
   },
   dueDate: {
-    type: Date,
+    type: DataTypes.DATE,
+    allowNull: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 });
 
-taskSchema.pre('save', function () {
-  this.updatedAt = Date.now();
-});
+Task.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  values.user = values.userId;
+  if (values.assignedTo === undefined && values.assignedToId !== undefined) {
+    values.assignedTo = values.assignedToId;
+  }
+  if (values.assignedBy === undefined && values.assignedById !== undefined) {
+    values.assignedBy = values.assignedById;
+  }
+  if (values.parentTask === undefined && values.parentTaskId !== undefined) {
+    values.parentTask = values.parentTaskId;
+  }
+  return values;
+};
 
-module.exports = mongoose.model('Task', taskSchema);
+// Relationships
+Task.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+Task.belongsTo(User, { as: 'assignedTo', foreignKey: 'assignedToId', constraints: false });
+Task.belongsTo(User, { as: 'assignedBy', foreignKey: 'assignedById', constraints: false });
+Task.belongsTo(Task, { as: 'parentTask', foreignKey: 'parentTaskId', constraints: false });
+
+module.exports = Task;

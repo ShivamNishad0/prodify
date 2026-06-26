@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { sequelize } = require('./config/db');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const User = require('./models/User');
@@ -6,16 +6,18 @@ const User = require('./models/User');
 // Load environment variables
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm';
-
 async function createInitialAdmin() {
   try {
-    // Connect to MongoDB
-    await mongoose.connect(MONGODB_URI);
-    console.log('Connected to MongoDB');
+    // Authenticate and connect
+    await sequelize.authenticate();
+    console.log('Connected to PostgreSQL database');
+
+    // Sync database schemas to ensure User table exists
+    await sequelize.sync({ alter: true });
+    console.log('PostgreSQL models synced successfully');
 
     // Check if admin already exists
-    const existingAdmin = await User.findOne({ role: 'admin' });
+    const existingAdmin = await User.findOne({ where: { role: 'admin' } });
     
     if (existingAdmin) {
       console.log('Admin user already exists:');
@@ -35,14 +37,12 @@ async function createInitialAdmin() {
     const hashedPassword = await bcrypt.hash(adminPassword, salt);
 
     // Create admin user
-    const adminUser = new User({
+    const adminUser = await User.create({
       name: adminName,
       email: adminEmail,
       password: hashedPassword,
       role: 'admin'
     });
-
-    await adminUser.save();
 
     console.log('Initial admin user created successfully!');
     console.log('Email:', adminEmail);
@@ -59,7 +59,7 @@ async function createInitialAdmin() {
     console.error('Error creating initial admin:', error);
   } finally {
     // Close database connection
-    await mongoose.connection.close();
+    await sequelize.close();
     console.log('Database connection closed.');
   }
 }

@@ -1,10 +1,10 @@
 // server.js (or index.js)
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const { connectDB } = require('./config/db');
 
 // --- 1. CONFIGURATION LOADING ---
 dotenv.config();
@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 const PORT = 5001;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm';
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm';
 
 // The frontend origins that are allowed access (including the reported 5173)
 const ALLOWED_ORIGINS = process.env.CORS_ORIGINS ? 
@@ -37,17 +37,7 @@ if (process.env.KEYCLOAK_URL && process.env.KEYCLOAK_REALM) {
   }
 }
 
-// --- 4. DATABASE CONNECTION ---
-const connectDB = async () => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('MongoDB successfully connected');
-  } catch (err) {
-    console.error(`MongoDB connection error: ${err.message}`);
-    // Exit process with failure code 1
-    process.exit(1); 
-  }
-};
+// Connection helper imported from config/db.js
 
 // --- 5. MIDDLEWARE ---
 app.use(cors({

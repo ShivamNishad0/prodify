@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op, fn, col } = require('sequelize');
 const auth = require('../middleware/auth');
 const Customer = require('../models/Customer');
 const Order = require('../models/Order');
@@ -9,37 +10,33 @@ const router = express.Router();
 router.get('/dashboard', auth, async (req, res) => {
   try {
     // Get total customers
-    const totalCustomers = await Customer.countDocuments();
+    const totalCustomers = await Customer.count();
 
     // Get active customers (assuming active means created in last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const activeCustomers = await Customer.countDocuments({
-      createdAt: { $gte: thirtyDaysAgo }
+    const activeCustomers = await Customer.count({
+      where: {
+        createdAt: { [Op.gte]: thirtyDaysAgo }
+      }
     });
 
     // Get new customers this month
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const newCustomers = await Customer.countDocuments({
-      createdAt: { $gte: startOfMonth }
+    const newCustomers = await Customer.count({
+      where: {
+        createdAt: { [Op.gte]: startOfMonth }
+      }
     });
 
     // Get monthly revenue
-    const monthlyRevenue = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: startOfMonth },
-          status: { $ne: 'cancelled' }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$totalAmount' }
-        }
+    const revenueSum = await Order.sum('totalAmount', {
+      where: {
+        createdAt: { [Op.gte]: startOfMonth },
+        status: { [Op.ne]: 'cancelled' }
       }
-    ]);
+    });
 
-    const revenue = monthlyRevenue.length > 0 ? monthlyRevenue[0].total : 0;
+    const revenue = revenueSum || 0;
 
     res.json({
       totalCustomers,
@@ -56,25 +53,25 @@ router.get('/dashboard', auth, async (req, res) => {
 // Get sales analytics
 router.get('/sales', auth, async (req, res) => {
   try {
-    const salesData = await Order.aggregate([
-      {
-        $match: {
-          status: { $ne: 'cancelled' }
-        }
+    const sales = await Order.findAll({
+      where: {
+        status: { [Op.ne]: 'cancelled' }
       },
-      {
-        $group: {
-          _id: {
-            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
-          },
-          totalSales: { $sum: '$totalAmount' },
-          orderCount: { $sum: 1 }
-        }
-      },
-      {
-        $sort: { '_id': 1 }
-      }
-    ]);
+      attributes: [
+        [fn('to_char', col('createdAt'), 'YYYY-MM-DD'), '_id'],
+        [fn('SUM', col('totalAmount')), 'totalSales'],
+        [fn('COUNT', col('id')), 'orderCount']
+      ],
+      group: [fn('to_char', col('createdAt'), 'YYYY-MM-DD')],
+      order: [[fn('to_char', col('createdAt'), 'YYYY-MM-DD'), 'ASC']],
+      raw: true
+    });
+
+    const salesData = sales.map(s => ({
+      _id: s._id,
+      totalSales: parseFloat(s.totalSales || 0),
+      orderCount: parseInt(s.orderCount || 0, 10)
+    }));
 
     res.json(salesData);
   } catch (err) {

@@ -1,5 +1,11 @@
 TODO.md
-backend/.env
-*.env
+.env*
 auth-debug-plan.md
 ADMIN_LOGIN_GUIDE.md
+keycloak-*/
+.DS_Store
+README copy.md
+*.log
+PLAN.md
+SETUP.md
+run-keycloak.sh

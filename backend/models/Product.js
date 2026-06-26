@@ -1,170 +1,157 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
+const User = require('./User');
 
-const productSchema = new mongoose.Schema({
+const Product = sequelize.define('Product', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   title: {
-    type: String,
-    required: true,
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   description: {
-    type: String,
-    default: ''
+    type: DataTypes.TEXT,
+    defaultValue: '',
   },
   price: {
-    type: Number,
-    required: true,
-    min: 0
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    validate: {
+      min: 0,
+    },
   },
   discountPrice: {
-    type: Number,
-    default: 0,
-    min: 0
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
+    validate: {
+      min: 0,
+    },
   },
   quantity: {
-    type: Number,
-    required: true,
-    default: 0,
-    min: 0
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    validate: {
+      min: 0,
+    },
   },
   category: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   subcategory: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   sku: {
-    type: String,
+    type: DataTypes.STRING,
+    allowNull: true,
     unique: true,
-    sparse: true
   },
   barcode: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   photo: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
-  photos: [{
-    type: String
-  }],
+  photos: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+  },
   brand: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   color: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   size: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   material: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   weight: {
-    value: {
-      type: Number,
-      default: 0
+    type: DataTypes.JSONB,
+    defaultValue: {
+      value: 0,
+      unit: 'kg',
     },
-    unit: {
-      type: String,
-      default: 'kg'
-    }
   },
   dimensions: {
-    length: {
-      type: Number,
-      default: 0
+    type: DataTypes.JSONB,
+    defaultValue: {
+      length: 0,
+      width: 0,
+      height: 0,
+      unit: 'cm',
     },
-    width: {
-      type: Number,
-      default: 0
-    },
-    height: {
-      type: Number,
-      default: 0
-    },
-    unit: {
-      type: String,
-      default: 'cm'
-    }
   },
   status: {
-    type: String,
-    enum: ['active', 'inactive', 'out_of_stock', 'discontinued'],
-    default: 'active'
+    type: DataTypes.ENUM('active', 'inactive', 'out_of_stock', 'discontinued'),
+    defaultValue: 'active',
   },
-  tags: [{
-    type: String
-  }],
+  tags: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+  },
   vendor: {
-    name: {
-      type: String,
-      default: ''
+    type: DataTypes.JSONB,
+    defaultValue: {
+      name: '',
+      email: '',
+      phone: '',
     },
-    email: {
-      type: String,
-      default: ''
-    },
-    phone: {
-      type: String,
-      default: ''
-    }
   },
-  specifications: [{
-    key: {
-      type: String
-    },
-    value: {
-      type: String
-    }
-  }],
+  specifications: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+  },
   rating: {
-    average: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5
+    type: DataTypes.JSONB,
+    defaultValue: {
+      average: 0,
+      count: 0,
     },
-    count: {
-      type: Number,
-      default: 0
-    }
   },
   salesCount: {
-    type: Number,
-    default: 0
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
   viewCount: {
-    type: Number,
-    default: 0
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+}, {
+  timestamps: true,
+});
+
+Product.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  values.name = values.title;
+  if (values.creatorUser !== undefined) {
+    values.createdBy = values.creatorUser;
   }
-});
+  return values;
+};
 
-// Update the updatedAt field before saving
-productSchema.pre('save', function () {
-  this.updatedAt = Date.now();
-});
+// Relationships
+Product.belongsTo(User, { as: 'creatorUser', foreignKey: 'createdBy', constraints: false });
 
-// Index for better search performance
-productSchema.index({ title: 'text', description: 'text', tags: 'text' });
-
-module.exports = mongoose.model('Product', productSchema);
-
+module.exports = Product;

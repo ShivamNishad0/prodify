@@ -8,8 +8,10 @@ const Notification = require('../models/Notification');
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const notifications = await Notification.find({ user: req.user.id })
-      .sort({ createdAt: -1 });
+    const notifications = await Notification.findAll({
+      where: { userId: req.user.id },
+      order: [['createdAt', 'DESC']]
+    });
     res.json(notifications);
   } catch (err) {
     console.error(err.message);
@@ -24,13 +26,11 @@ router.post('/', auth, async (req, res) => {
   const { message, type } = req.body;
 
   try {
-    const newNotification = new Notification({
-      user: req.user.id,
+    const notification = await Notification.create({
+      userId: req.user.id,
       message,
       type
     });
-
-    const notification = await newNotification.save();
     res.json(notification);
   } catch (err) {
     console.error(err.message);
@@ -43,22 +43,18 @@ router.post('/', auth, async (req, res) => {
 // @access  Private
 router.put('/:id/read', auth, async (req, res) => {
   try {
-    let notification = await Notification.findById(req.params.id);
+    const notification = await Notification.findByPk(req.params.id);
 
     if (!notification) {
       return res.status(404).json({ msg: 'Notification not found' });
     }
 
     // Make sure user owns notification
-    if (notification.user.toString() !== req.user.id) {
+    if (notification.userId.toString() !== req.user.id.toString()) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    notification = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { $set: { isRead: true } },
-      { new: true }
-    );
+    await notification.update({ isRead: true });
 
     res.json(notification);
   } catch (err) {
@@ -72,18 +68,18 @@ router.put('/:id/read', auth, async (req, res) => {
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
-    let notification = await Notification.findById(req.params.id);
+    const notification = await Notification.findByPk(req.params.id);
 
     if (!notification) {
       return res.status(404).json({ msg: 'Notification not found' });
     }
 
     // Make sure user owns notification
-    if (notification.user.toString() !== req.user.id) {
+    if (notification.userId.toString() !== req.user.id.toString()) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    await Notification.findByIdAndDelete(req.params.id);
+    await notification.destroy();
 
     res.json({ msg: 'Notification removed' });
   } catch (err) {
@@ -93,4 +89,3 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
-

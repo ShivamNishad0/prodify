@@ -14,5 +14,6 @@ dist-ssr
 *.local
 build
 TODO.md
-
 *.env
+uploads/
+.DS_Store

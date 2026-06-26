@@ -74,7 +74,9 @@ const generateTempPassword = () => {
 // @access  Private/Admin
 router.get('/users', adminAuth, async (req, res) => {
   try {
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    const users = await User.findAll({
+      order: [['createdAt', 'DESC']]
+    });
     res.json(users);
   } catch (err) {
     console.error(err.message);
@@ -90,7 +92,7 @@ router.post('/create-user', adminAuth, async (req, res) => {
     const { name, email, role = 'user', sendEmail = true } = req.body;
 
     // Check if user already exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ where: { email } });
     if (user) {
       return res.status(400).json({ msg: 'User with this email already exists' });
     }
@@ -98,19 +100,17 @@ router.post('/create-user', adminAuth, async (req, res) => {
     // Generate temporary password
     const tempPassword = generateTempPassword();
 
-    // Create new user
-    user = new User({
-      name,
-      email,
-      password: tempPassword,
-      role: role || 'employee' // Use provided role or default to 'employee'
-    });
-
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(tempPassword, salt);
+    const hashedPassword = await bcrypt.hash(tempPassword, salt);
 
-    await user.save();
+    // Create new user
+    user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || 'employee' // Use provided role or default to 'employee'
+    });
 
     // Send welcome email if requested
     if (sendEmail) {
@@ -168,14 +168,14 @@ router.put('/users/:id', adminAuth, async (req, res) => {
     const { name, email, role } = req.body;
 
     // Find user to update
-    let user = await User.findById(req.params.id);
+    let user = await User.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
 
     // Check if email is already taken by another user
     if (email && email !== user.email) {
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         return res.status(400).json({ msg: 'Email already in use by another user' });
       }
@@ -210,7 +210,7 @@ router.put('/users/:id', adminAuth, async (req, res) => {
 // @access  Private/Admin
 router.delete('/users/:id', adminAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id);
     
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
@@ -221,7 +221,7 @@ router.delete('/users/:id', adminAuth, async (req, res) => {
       return res.status(400).json({ msg: 'Cannot delete your own account' });
     }
 
-    await User.findByIdAndDelete(req.params.id);
+    await user.destroy();
 
     res.json({ msg: 'User deleted successfully' });
 
@@ -238,7 +238,7 @@ router.post('/reset-user-password/:id', adminAuth, async (req, res) => {
   try {
     const { sendEmail = true } = req.body;
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id);
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }

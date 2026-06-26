@@ -1,23 +1,26 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const tenderSchema = new mongoose.Schema({
+const Tender = sequelize.define('Tender', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   title: {
-    type: String,
-    required: true,
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   description: {
-    type: String,
-    required: true
+    type: DataTypes.TEXT,
+    allowNull: false,
   },
   organization: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   category: {
-    type: String,
-    required: true,
-    enum: [
+    type: DataTypes.ENUM(
       'IT & Software',
       'Hardware & Equipment',
       'Office Supplies',
@@ -25,74 +28,73 @@ const tenderSchema = new mongoose.Schema({
       'Consulting Services',
       'Maintenance',
       'Other'
-    ]
+    ),
+    allowNull: false,
   },
   tenderId: {
-    type: String,
-    required: true,
-    unique: true
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
   },
   gemTenderId: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   estimatedValue: {
-    type: Number,
-    required: true
+    type: DataTypes.FLOAT,
+    allowNull: false,
   },
   applicationDeadline: {
-    type: Date,
-    required: true
+    type: DataTypes.DATE,
+    allowNull: false,
   },
   openingDate: {
-    type: Date,
-    required: true
+    type: DataTypes.DATE,
+    allowNull: false,
   },
   status: {
-    type: String,
-    enum: ['Active', 'Closed', 'Under Evaluation', 'Awarded'],
-    default: 'Active'
+    type: DataTypes.ENUM('Active', 'Closed', 'Under Evaluation', 'Awarded'),
+    defaultValue: 'Active',
   },
   location: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   contactEmail: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   contactPhone: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-  documents: [{
-    name: String,
-    url: String,
-    type: {
-      type: String,
-      enum: ['tender', 'specification', 'corrigendum']
-    }
-  }],
+  documents: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+  },
   eligibility: {
-    type: String,
-    required: true
+    type: DataTypes.TEXT,
+    allowNull: false,
   },
   termsConditions: {
-    type: String,
-    required: true
+    type: DataTypes.TEXT,
+    allowNull: false,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+}, {
+  timestamps: true,
 });
 
-tenderSchema.pre('save', function () {
-  this.updatedAt = new Date();
-});
+Tender.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  return values;
+};
 
-module.exports = mongoose.model('Tender', tenderSchema);
+module.exports = Tender;

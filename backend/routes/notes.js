@@ -8,7 +8,10 @@ const Note = require('../models/Note');
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const notes = await Note.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const notes = await Note.findAll({
+      where: { userId: req.user.id },
+      order: [['createdAt', 'DESC']]
+    });
     res.json(notes);
   } catch (err) {
     console.error(err.message);
@@ -23,13 +26,11 @@ router.post('/', auth, async (req, res) => {
   const { content, color } = req.body;
 
   try {
-    const newNote = new Note({
-      user: req.user.id,
+    const note = await Note.create({
+      userId: req.user.id,
       content,
       color
     });
-
-    const note = await newNote.save();
     res.json(note);
   } catch (err) {
     console.error(err.message);
@@ -44,18 +45,14 @@ router.put('/:id', auth, async (req, res) => {
   const { content, color } = req.body;
 
   try {
-    let note = await Note.findById(req.params.id);
+    const note = await Note.findByPk(req.params.id);
 
     if (!note) return res.status(404).json({ msg: 'Note not found' });
-    if (note.user.toString() !== req.user.id) {
+    if (note.userId.toString() !== req.user.id.toString()) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    note = await Note.findByIdAndUpdate(
-      req.params.id,
-      { $set: { content, color } },
-      { new: true }
-    );
+    await note.update({ content, color });
 
     res.json(note);
   } catch (err) {
@@ -69,14 +66,14 @@ router.put('/:id', auth, async (req, res) => {
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
-    let note = await Note.findById(req.params.id);
+    const note = await Note.findByPk(req.params.id);
 
     if (!note) return res.status(404).json({ msg: 'Note not found' });
-    if (note.user.toString() !== req.user.id) {
+    if (note.userId.toString() !== req.user.id.toString()) {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    await Note.findByIdAndDelete(req.params.id);
+    await note.destroy();
     res.json({ msg: 'Note removed' });
   } catch (err) {
     console.error(err.message);

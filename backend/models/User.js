@@ -1,106 +1,120 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const userSchema = new mongoose.Schema({
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   name: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   email: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
+    validate: {
+      isEmail: true,
+    },
   },
   password: {
-    type: String,
-    required: false, // Not required for Keycloak users
+    type: DataTypes.STRING,
+    allowNull: true, // Not required for Keycloak users
   },
   role: {
-    type: String,
-    enum: ['admin', 'employee', 'manager', 'tl'],
-    default: 'employee',
+    type: DataTypes.ENUM('admin', 'employee', 'manager', 'tl'),
+    defaultValue: 'employee',
   },
-  // Keycloak authentication fields
   keycloakId: {
-    type: String,
-    default: null,
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null,
   },
   authProvider: {
-    type: String,
-    enum: ['local', 'keycloak'],
-    default: 'local',
+    type: DataTypes.ENUM('local', 'keycloak'),
+    defaultValue: 'local',
   },
   isWebsiteUser: {
-    type: Boolean,
-    default: false,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
   resetToken: {
-    type: String,
-    default: null,
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null,
   },
   resetTokenExpiry: {
-    type: Date,
-    default: null,
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
   },
-  // Profile fields
   avatar: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   phone: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   address: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   city: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   country: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   bio: {
-    type: String,
-    default: ''
+    type: DataTypes.TEXT,
+    defaultValue: '',
   },
   dateOfBirth: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   gender: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   company: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   website: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
   socialMedia: {
-    facebook: { type: String, default: '' },
-    twitter: { type: String, default: '' },
-    linkedin: { type: String, default: '' },
-    instagram: { type: String, default: '' }
+    type: DataTypes.JSONB,
+    defaultValue: {
+      facebook: '',
+      twitter: '',
+      linkedin: '',
+      instagram: '',
+    },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  }
+}, {
+  timestamps: true,
 });
 
-// Update the updatedAt field before saving
-userSchema.pre('save', function () {
-  this.updatedAt = Date.now();
-});
+User.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  delete values.password;
+  values._id = values.id;
+  return values;
+};
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = User;

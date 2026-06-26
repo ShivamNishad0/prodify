@@ -7,10 +7,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'process.env': {},
+    'process': { env: {} }
+  },
 
   resolve: {
     alias: {
-      "@shared": path.resolve(__dirname, "../frontend/src"),
+      "@shared": path.resolve(__dirname, "../frontend/src/shared"),
+      "@": path.resolve(__dirname, "../frontend/src"),
       react: path.resolve(__dirname, "node_modules/react"),
       "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },

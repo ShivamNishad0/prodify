@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Op } = require('sequelize');
 const User = require('../models/User');
 
 const auth = require('../middleware/auth');
@@ -16,7 +17,7 @@ const router = express.Router();
 // @desc    Get all users for assignment (Authenticated only)
 router.get('/users', auth, async (req, res) => {
   try {
-    const users = await User.find().select('name email role');
+    const users = await User.findAll({ attributes: ['id', 'name', 'email', 'role'] });
     res.json(users);
   } catch (err) {
     console.error(err.message);
@@ -68,7 +69,7 @@ const transporter = nodemailer.createTransport({
 // Function to send password reset email
 const sendPasswordResetEmail = async (email, resetToken) => {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ where: { email } });
   const name = user.name;
 
   const mailOptions = {
@@ -119,7 +120,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Check if user exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
@@ -185,7 +186,7 @@ router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       // Don't reveal whether email exists or not for security
       return res.status(200).json({
@@ -231,8 +232,10 @@ router.post('/reset-password/:token', async (req, res) => {
 
     // Find user with valid reset token
     const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() }
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { [Op.gt]: new Date() }
+      }
     });
 
     if (!user) {
@@ -279,7 +282,7 @@ router.get('/verify', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Get user from token
-    const user = await User.findById(decoded.user.id).select('-password');
+    const user = await User.findByPk(decoded.user.id);
     if (!user) {
       return res.status(401).json({ msg: 'Token is not valid' });
     }
@@ -304,7 +307,7 @@ router.get('/me', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.user.id).select('-password');
+    const user = await User.findByPk(decoded.user.id);
 
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
@@ -361,11 +364,10 @@ router.put('/profile', async (req, res) => {
       updateData[key] === undefined && delete updateData[key]
     );
 
-    const user = await User.findByIdAndUpdate(
-      decoded.user.id,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password');
+    const user = await User.findByPk(decoded.user.id);
+    if (user) {
+      await user.update(updateData);
+    }
 
     res.json(user);
   } catch (err) {
@@ -393,7 +395,7 @@ router.put('/avatar', avatarUpload.single('avatar'), async (req, res) => {
     }
 
     // Delete old avatar if exists
-    const oldUser = await User.findById(decoded.user.id);
+    const oldUser = await User.findByPk(decoded.user.id);
     if (oldUser && oldUser.avatar) {
       const oldAvatarPath = path.join(__dirname, '..', oldUser.avatar);
       if (fs.existsSync(oldAvatarPath)) {
@@ -401,11 +403,10 @@ router.put('/avatar', avatarUpload.single('avatar'), async (req, res) => {
       }
     }
 
-    const user = await User.findByIdAndUpdate(
-      decoded.user.id,
-      { avatar: `/uploads/avatars/${req.file.filename}` },
-      { new: true }
-    ).select('-password');
+    const user = await User.findByPk(decoded.user.id);
+    if (user) {
+      await user.update({ avatar: `/uploads/avatars/${req.file.filename}` });
+    }
 
     res.json(user);
   } catch (err) {
@@ -427,7 +428,7 @@ router.put('/password', async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     // Get user with password
-    const user = await User.findById(decoded.user.id);
+    const user = await User.findByPk(decoded.user.id);
 
     // Check if user is Keycloak-linked (cannot change password here)
     if (user.authProvider === 'keycloak') {

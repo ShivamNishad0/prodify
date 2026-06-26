@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const router = express.Router();
 const Tender = require('../models/Tender');
 
@@ -23,33 +24,34 @@ router.get('/', async (req, res) => {
     const filter = {};
     
     if (category) filter.category = category;
-    if (organization) filter.organization = { $regex: organization, $options: 'i' };
+    if (organization) filter.organization = { [Op.iLike]: `%${organization}%` };
     if (status) filter.status = status;
-    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (location) filter.location = { [Op.iLike]: `%${location}%` };
     
     // Search functionality
     if (search) {
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tenderId: { $regex: search, $options: 'i' } }
+      filter[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } },
+        { tenderId: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
     // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
-    // Build sort object
-    const sort = {};
-    sort[sortBy] = order === 'asc' ? 1 : -1;
+    // Build sort options
+    const sortOrderOption = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-    const tenders = await Tender.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .select('-termsConditions -eligibility');
+    const tenders = await Tender.findAll({
+      where: filter,
+      attributes: { exclude: ['termsConditions', 'eligibility'] },
+      order: [[sortBy, sortOrderOption]],
+      offset,
+      limit: parseInt(limit)
+    });
 
-    const total = await Tender.countDocuments(filter);
+    const total = await Tender.count({ where: filter });
 
     res.json({
       tenders,
@@ -71,7 +73,7 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const tender = await Tender.findById(req.params.id);
+    const tender = await Tender.findByPk(req.params.id);
     
     if (!tender) {
       return res.status(404).json({ msg: 'Tender not found' });
@@ -80,9 +82,6 @@ router.get('/:id', async (req, res) => {
     res.json(tender);
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Tender not found' });
-    }
     res.status(500).send('Server Error');
   }
 });
@@ -94,16 +93,18 @@ router.get('/search/:query', async (req, res) => {
   try {
     const query = req.params.query;
     
-    const tenders = await Tender.find({
-      $or: [
-        { title: { $regex: query, $options: 'i' } },
-        { description: { $regex: query, $options: 'i' } },
-        { organization: { $regex: query, $options: 'i' } },
-        { tenderId: { $regex: query, $options: 'i' } }
-      ]
-    })
-    .select('title organization tenderId category estimatedValue applicationDeadline status location')
-    .limit(20);
+    const tenders = await Tender.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${query}%` } },
+          { description: { [Op.iLike]: `%${query}%` } },
+          { organization: { [Op.iLike]: `%${query}%` } },
+          { tenderId: { [Op.iLike]: `%${query}%` } }
+        ]
+      },
+      attributes: ['id', 'title', 'organization', 'tenderId', 'category', 'estimatedValue', 'applicationDeadline', 'status', 'location'],
+      limit: 20
+    });
 
     res.json(tenders);
   } catch (err) {
@@ -117,7 +118,11 @@ router.get('/search/:query', async (req, res) => {
 // @access  Public
 router.get('/categories/list', async (req, res) => {
   try {
-    const categories = await Tender.distinct('category');
+    const list = await Tender.findAll({
+      attributes: ['category'],
+      group: ['category']
+    });
+    const categories = list.map(t => t.category).filter(Boolean);
     res.json(categories);
   } catch (err) {
     console.error(err.message);
@@ -130,8 +135,7 @@ router.get('/categories/list', async (req, res) => {
 // @access  Private (Admin)
 router.post('/', async (req, res) => {
   try {
-    const newTender = new Tender(req.body);
-    const tender = await newTender.save();
+    const tender = await Tender.create(req.body);
     res.json(tender);
   } catch (err) {
     console.error(err.message);
@@ -144,18 +148,13 @@ router.post('/', async (req, res) => {
 // @access  Private (Admin)
 router.put('/:id', async (req, res) => {
   try {
-    let tender = await Tender.findById(req.params.id);
+    const tender = await Tender.findByPk(req.params.id);
 
     if (!tender) {
       return res.status(404).json({ msg: 'Tender not found' });
     }
 
-    tender = await Tender.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    );
-
+    await tender.update(req.body);
     res.json(tender);
   } catch (err) {
     console.error(err.message);
@@ -168,13 +167,13 @@ router.put('/:id', async (req, res) => {
 // @access  Private (Admin)
 router.delete('/:id', async (req, res) => {
   try {
-    const tender = await Tender.findById(req.params.id);
+    const tender = await Tender.findByPk(req.params.id);
 
     if (!tender) {
       return res.status(404).json({ msg: 'Tender not found' });
     }
 
-    await Tender.findByIdAndDelete(req.params.id);
+    await tender.destroy();
     res.json({ msg: 'Tender removed' });
   } catch (err) {
     console.error(err.message);

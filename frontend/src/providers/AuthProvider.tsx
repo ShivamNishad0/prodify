@@ -36,6 +36,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+let keycloakInitPromise: Promise<boolean> | null = null;
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 } catch (error) {
                     console.error('Token verification failed:', error);
 
-                    if (authMethod === 'keycloak' && keycloak) {
+                    if (authMethod === 'keycloak' && keycloak && typeof keycloak.updateToken === 'function') {
                         try {
                             const refreshed = await keycloak.updateToken(30);
                             if (refreshed) {
@@ -117,12 +119,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
             setLoading(true);
-            const authenticated = await keycloak.init({
-                onLoad: 'login-required',
-                redirectUri: `${window.location.origin}/admin/auth/callback`,
-                pkceMethod: 'S256',
-                flow: 'standard'
-            });
+            if (!keycloakInitPromise) {
+                keycloakInitPromise = keycloak.init({
+                    onLoad: 'login-required',
+                    redirectUri: `${window.location.origin}/admin/auth/callback`,
+                    pkceMethod: 'S256',
+                    flow: 'standard'
+                });
+            }
+            const authenticated = await keycloakInitPromise;
 
             if (authenticated) {
                 const keycloakToken = keycloak.token;
@@ -165,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = useCallback(async () => {
         try {
-            if (authMethod === 'keycloak' && keycloak) {
+            if (authMethod === 'keycloak' && keycloak && typeof keycloak.logout === 'function') {
                 await keycloak.logout({ redirectUri: window.location.origin });
             }
         } catch (err) {
@@ -179,7 +184,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [authMethod]);
 
     const getToken = useCallback(async () => {
-        if (authMethod === 'keycloak' && keycloak) {
+        if (authMethod === 'keycloak' && keycloak && typeof keycloak.updateToken === 'function') {
             try {
                 const refreshed = await keycloak.updateToken(30);
                 return keycloak.token || null;

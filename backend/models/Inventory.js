@@ -1,27 +1,44 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
+const Product = require('./Product');
 
-const inventorySchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true,
+const Inventory = sequelize.define('Inventory', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  productId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
   quantity: {
-    type: Number,
-    required: true,
-    default: 0,
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
   },
   location: {
-    type: String,
+    type: DataTypes.STRING,
+    defaultValue: '',
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model('Inventory', inventorySchema);
+Inventory.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  return values;
+};
+
+// Relationships
+Inventory.belongsTo(Product, { as: 'product', foreignKey: 'productId' });
+
+module.exports = Inventory;

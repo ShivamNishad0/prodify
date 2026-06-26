@@ -14,6 +14,101 @@ router.get('/login', keycloak.protect(), (req, res) => {
   res.json({ message: 'Redirecting to Keycloak login...' });
 });
 
+// Keycloak POST callback endpoint (for AJAX login)
+router.post('/callback', async (req, res) => {
+  try {
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+      return res.status(401).json({ msg: 'No token, authorization denied' });
+    }
+
+    const accessToken = authHeader.replace('Bearer ', '');
+    
+    // Decode Keycloak token to get user info
+    const decoded = jwt.decode(accessToken);
+    if (!decoded) {
+      return res.status(400).json({ msg: 'Invalid token' });
+    }
+    
+    try {
+      require('fs').appendFileSync(
+        require('path').join(__dirname, '../error.log'),
+        `[${new Date().toISOString()}] DECODED TOKEN: ${JSON.stringify(decoded, null, 2)}\n\n`
+      );
+    } catch (fsErr) {}
+    
+    const keycloakId = decoded.sub;
+    const email = decoded.email;
+    const name = decoded.name || decoded.preferred_username || (email ? email.split('@')[0] : 'user');
+    
+    // Check if user exists
+    let user = await User.findOne({ where: { keycloakId } });
+    
+    if (!user) {
+      // Check if user with same email exists
+      if (email) {
+        user = await User.findOne({ where: { email } });
+      }
+      
+      if (user) {
+        // Link existing user to Keycloak
+        user.keycloakId = keycloakId;
+        user.authProvider = 'keycloak';
+        user.isWebsiteUser = true;
+        await user.save();
+      } else {
+        // Create new user from Keycloak
+        user = await User.create({
+          name,
+          email: email || `${keycloakId}@placeholder.com`,
+          keycloakId,
+          authProvider: 'keycloak',
+          isWebsiteUser: true,
+          role: 'employee' // Default role for website users
+        });
+      }
+    }
+    
+    // Generate our own JWT for API access
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+    
+    const token = jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE || '7d' }
+    );
+    
+    // Return all auth info for frontend
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        authProvider: 'keycloak',
+        isWebsiteUser: true
+      }
+    });
+  } catch (err) {
+    console.error('Keycloak POST callback error:', err);
+    try {
+      require('fs').appendFileSync(
+        require('path').join(__dirname, '../error.log'),
+        `[${new Date().toISOString()}] POST /callback error: ${err.message}\nStack: ${err.stack}\n\n`
+      );
+    } catch (fsErr) {}
+    res.status(500).json({ 
+      msg: 'Authentication failed', 
+      error: err.message 
+    });
+  }
+});
+
 // Keycloak callback endpoint
 router.get('/callback', async (req, res) => {
   try {
@@ -38,11 +133,11 @@ router.get('/callback', async (req, res) => {
     const name = decoded.name || decoded.preferred_username || email.split('@')[0];
     
     // Check if user exists
-    let user = await User.findOne({ keycloakId });
+    let user = await User.findOne({ where: { keycloakId } });
     
     if (!user) {
       // Check if user with same email exists
-      user = await User.findOne({ email });
+      user = await User.findOne({ where: { email } });
       
       if (user) {
         // Link existing user to Keycloak
@@ -52,7 +147,7 @@ router.get('/callback', async (req, res) => {
         await user.save();
       } else {
         // Create new user from Keycloak
-        user = new User({
+        user = await User.create({
           name,
           email,
           keycloakId,
@@ -60,7 +155,6 @@ router.get('/callback', async (req, res) => {
           isWebsiteUser: true,
           role: 'employee' // Default role for website users
         });
-        await user.save();
       }
     }
     
@@ -115,7 +209,7 @@ router.get('/verify', keycloakAuth, async (req, res) => {
     }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.user.id).select('-password');
+    const user = await User.findByPk(decoded.user.id);
     
     if (!user) {
       return res.status(401).json({ msg: 'User not found' });
@@ -191,7 +285,7 @@ router.post('/refresh-token', async (req, res) => {
       if (authHeader) {
         const token = authHeader.replace('Bearer ', '');
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.user.id).select('-password');
+        const user = await User.findByPk(decoded.user.id);
         
         if (user && user.authProvider === 'keycloak') {
           // Return a flag to trigger re-authentication
@@ -213,8 +307,10 @@ router.post('/refresh-token', async (req, res) => {
 // Get Keycloak user info (for admin to see linked users)
 router.get('/users', keycloakAuth, async (req, res) => {
   try {
-    const keycloakUsers = await User.find({ authProvider: 'keycloak' })
-      .select('name email keycloakId isWebsiteUser role createdAt');
+    const keycloakUsers = await User.findAll({
+      where: { authProvider: 'keycloak' },
+      attributes: ['id', 'name', 'email', 'keycloakId', 'isWebsiteUser', 'role', 'createdAt']
+    });
     res.json(keycloakUsers);
   } catch (err) {
     console.error(err.message);

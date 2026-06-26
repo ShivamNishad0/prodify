@@ -7,14 +7,16 @@ const router = express.Router();
 // Get all customers with metrics
 router.get('/', auth, async (req, res) => {
   try {
-    const customers = await Customer.find().sort({ createdAt: -1 });
+    const customers = await Customer.findAll({
+      order: [['createdAt', 'DESC']]
+    });
     
     // Get order statistics for each customer
     const Order = require('../models/Order');
     
     const customersWithMetrics = await Promise.all(
       customers.map(async (customer) => {
-        const customerOrders = await Order.find({ customer: customer._id });
+        const customerOrders = await Order.findAll({ where: { customerId: customer.id } });
         
         const totalSpent = customerOrders.reduce((sum, order) => sum + order.totalAmount, 0);
         const orderCount = customerOrders.length;
@@ -43,7 +45,7 @@ router.get('/', auth, async (req, res) => {
 // Get customer by ID
 router.get('/:id', auth, async (req, res) => {
   try {
-    const customer = await Customer.findById(req.params.id);
+    const customer = await Customer.findByPk(req.params.id);
     if (!customer) {
       return res.status(404).json({ msg: 'Customer not found' });
     }
@@ -77,14 +79,11 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     const { name, email, phone, address, status } = req.body;
-    const customer = await Customer.findByIdAndUpdate(
-      req.params.id,
-      { name, email, phone, address, status, updatedAt: Date.now() },
-      { new: true }
-    );
+    const customer = await Customer.findByPk(req.params.id);
     if (!customer) {
       return res.status(404).json({ msg: 'Customer not found' });
     }
+    await customer.update({ name, email, phone, address, status });
     res.json(customer);
   } catch (err) {
     console.error(err.message);
@@ -95,10 +94,11 @@ router.put('/:id', auth, async (req, res) => {
 // Delete customer
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const customer = await Customer.findByIdAndDelete(req.params.id);
+    const customer = await Customer.findByPk(req.params.id);
     if (!customer) {
       return res.status(404).json({ msg: 'Customer not found' });
     }
+    await customer.destroy();
     res.json({ msg: 'Customer deleted' });
   } catch (err) {
     console.error(err.message);

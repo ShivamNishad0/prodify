@@ -1,28 +1,51 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
+const User = require('./User');
 
-const messageSchema = new mongoose.Schema({
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const Message = sequelize.define('Message', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
-  recipient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+  senderId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  recipientId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
   content: {
-    type: String,
-    required: true,
+    type: DataTypes.TEXT,
+    allowNull: false,
   },
   isRead: {
-    type: Boolean,
-    default: false,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  // Compatibility virtual for mongoose _id
+  _id: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.id;
+    },
   },
+}, {
+  timestamps: true,
+  updatedAt: false, // Messages don't typically have updatedAt
 });
 
-module.exports = mongoose.model('Message', messageSchema);
+Message.prototype.toJSON = function () {
+  const values = Object.assign({}, this.get());
+  values._id = values.id;
+  values.sender = values.senderId;
+  values.recipient = values.recipientId;
+  return values;
+};
+
+// Relationships
+Message.belongsTo(User, { as: 'sender', foreignKey: 'senderId' });
+Message.belongsTo(User, { as: 'recipient', foreignKey: 'recipientId' });
+
+module.exports = Message;
