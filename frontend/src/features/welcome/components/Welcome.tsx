@@ -1,11 +1,19 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { initThreeBackground } from '../utils/threeBackground';
 
 const Welcome = () => {
     const [hoveredButton, setHoveredButton] = useState<string | null>(null);
     const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+    const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!canvasContainerRef.current) return;
+        const { destroy } = initThreeBackground(canvasContainerRef.current);
+        return () => destroy();
+    }, []);
 
     const navLinks = [
         { name: "Product", href: "#" },
@@ -108,6 +116,19 @@ const Welcome = () => {
 
             {/* Hero Section */}
             <main className="w-full max-w-[1200px] flex-1 flex flex-col items-center justify-center text-center px-6 pt-12 pb-32 relative z-10">
+
+                {/* Three.js animated background canvas */}
+                <div
+                    ref={canvasContainerRef}
+                    aria-hidden="true"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 0,
+                        pointerEvents: 'none',
+                        overflow: 'hidden',
+                    }}
+                />
 
                 {/* Badge */}
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-primary-light/10 text-brand-primary-dark text-xs font-bold uppercase tracking-widest mb-8 animate-[fadeIn_0.6s_ease-out] border border-brand-primary/20">
