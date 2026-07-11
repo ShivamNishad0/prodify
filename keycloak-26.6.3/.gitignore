@@ -1,0 +1,10 @@
+# Ignore Keycloak heavy binaries and local data
+lib/
+data/
+
+# Ignore logs
+*.log
+logs/
+
+# Mac specific
+.DS_Store
