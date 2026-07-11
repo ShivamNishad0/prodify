@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # 1. Next.js Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:5000
+    depends_on:
+      - backend
+
+  # 2. Node.js Express Backend
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres_password
+      - DB_NAME=crm_db
+      - KEYCLOAK_URL=http://keycloak:8080
+    depends_on:
+      - postgres
+      - keycloak
+
+  # 3. PostgreSQL Database (Shared for App & Keycloak)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: crm_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 4. Keycloak Authentication Server
+  keycloak:
+    build: ./keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: crm_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres_password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin_password
+    command: start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
