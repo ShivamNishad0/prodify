@@ -86,86 +86,37 @@ graph TD
 ```
 prodify-crm/
 ├── backend/                       # Express.js REST API
-│   ├── config/                    # Sequelize DB & Keycloak configurations
-│   ├── middleware/                # Admin auth & general JWT verification
-│   ├── models/                    # Sequelize PostgreSQL model definitions
-│   ├── routes/                    # REST routes (auth, customers, orders, etc.)
-│   ├── seedAdmin.js               # Administrator PostgreSQL seeding script
-│   ├── setupKeycloak.js           # Keycloak realm automations
-│   ├── server.js                  # Express Entry point
-│   └── package.json
 ├── frontend/                      # Next.js Admin Panel Dashboard
-│   ├── public/                    # Static landing assets
-│   ├── src/
-│   │   ├── app/                   # Next.js App router page files
-│   │   ├── core/                  # Axios clients & Keycloak configs
-│   │   ├── features/              # Feature modules (Auth, Dashboard)
-│   │   ├── layouts/               # Dashboard Layout wrappers
-│   │   └── providers/             # Global Context providers (AuthProvider)
-│   └── package.json
-└── website/                       # Vite Client Website Portal
-    ├── public/                    # Static portal assets
-    ├── src/
-    │   ├── components/            # UI components (Navbar, Login, etc.)
-    │   ├── contexts/              # Authentication contexts
-    │   └── main.jsx               # Vite Entry Point
-    └── package.json
+├── website/                       # Vite Client Website Portal
+├── keycloak-26.6.3/               # Keycloak container context & configs
+├── docs/                          # Project documentation (PLAN, SETUP, TODO)
+├── scripts/                       # Shell scripts (e.g., run-keycloak.sh)
+├── asset/                         # Image assets for documentation
+├── docker-compose.yml             # Main Docker Compose for the whole stack
+├── .gitignore                     # Root gitignore
+└── README.md                      # This file
 ```
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation & Quick Start
 
-### 1. Database Configuration
-Ensure PostgreSQL is active and create a database named `prodify_crm`:
-```sql
-CREATE DATABASE prodify_crm;
-```
+The easiest way to run the entire project is using **Docker**.
 
-### 2. Configure Environment Variables
-Set up env variables for each folder as detailed in the [Environment Variables](#-environment-variables) section.
-
-### 3. Install Dependencies & Build
-Install node modules for all workspaces:
+### 1. Run via Docker Compose (Recommended)
+Make sure you have Docker installed, then run:
 ```bash
-# In backend/
-cd backend && npm install
-
-# In frontend/
-cd ../frontend && npm install
-
-# In website/
-cd ../website && npm install
+docker-compose up --build
 ```
+This will automatically build and start the Frontend (Port 3000), Backend (Port 5000), Postgres Database (Port 5432), and Keycloak (Port 8080).
 
-### 4. Running the Project Sequentially
-Start the servers in separate terminal tabs:
+### 2. Manual Installation
+If you prefer running the servers manually, please check our detailed setup guides:
+* [Setup Guide](docs/SETUP.md)
+* [Implementation Plan](docs/PLAN.md)
+* [Todo List](docs/TODO.md)
 
-**Step A (SSO)**:
-```bash
-./run-keycloak.sh
-```
-
-**Step B (Seeding DB)**:
-```bash
-cd backend
-node seedAdmin.js
-```
-
-**Step C (Backend)**:
-```bash
-cd backend && npm run dev
-```
-
-**Step D (Admin Panel)**:
-```bash
-cd frontend && nvm use 20 && npm run dev
-```
-
-**Step E (Website Portal)**:
-```bash
-cd website && npm run dev
-```
+*(Note: If running manually, you can start Keycloak using `./scripts/run-keycloak.sh`)*
 
 ---
 
