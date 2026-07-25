@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from "react";
-import Navbar from "@/shared/components/Navbar";
-import Sidebar from "@/shared/components/Sidebar";
-import RightSidebar from "@/shared/components/RightSidebar";
+import Navbar from "../shared/components/Navbar";
+import Sidebar from "../shared/components/Sidebar";
+import RightSidebar from "../shared/components/RightSidebar";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     const [isLeftOpen, setIsLeftOpen] = useState(false);

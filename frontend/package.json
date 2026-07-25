@@ -1,11 +1,7 @@
 {
   "name": "prodify-crm-workspace",
+  "author": "Shivam Nishad",
   "private": true,
-  "workspaces": [
-    "web",
-    "packages/micro-ui-internals",
-    "packages/modules/*"
-  ],
   "scripts": {
     "dev": "npm run dev --workspace=web",
     "build": "npm run build --workspace=web"

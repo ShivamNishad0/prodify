@@ -1,6 +1,7 @@
 {
   "name": "api-gateway",
   "version": "1.0.0",
+  "author": "Shivam Nishad",
   "description": "API Gateway for CRM Microservices",
   "main": "server.js",
   "scripts": {

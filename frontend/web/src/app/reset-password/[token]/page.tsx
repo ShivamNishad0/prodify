@@ -1,11 +1,9 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import ResetPasswordForm from '@/features/auth/components/ResetPasswordForm';
 
-export default function ResetPasswordPage() {
-    const params = useParams();
-    const token = params.token as string;
+export function generateStaticParams() {
+    return [];
+}
 
-    return <ResetPasswordForm token={token} />;
+export default function ResetPasswordPage({ params }: { params: { token: string } }) {
+    return <ResetPasswordForm token={params.token} />;
 }

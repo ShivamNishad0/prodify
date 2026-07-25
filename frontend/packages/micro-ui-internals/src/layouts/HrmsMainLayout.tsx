@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { usePathname } from 'next/navigation';
-import Navbar from "@/shared/components/Navbar";
-import Sidebar from "@/shared/components/Sidebar";
+import Navbar from "../shared/components/Navbar";
+import Sidebar from "../shared/components/Sidebar";
 import { FaRegCalendarAlt, FaUserTie } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { HiUserGroup } from "react-icons/hi";

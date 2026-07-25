@@ -1,6 +1,7 @@
 {
   "name": "@prodify/digit-ui-module-crm",
   "version": "1.0.0",
+  "author": "Shivam Nishad",
   "main": "src/index.js",
   "private": true,
   "dependencies": {}

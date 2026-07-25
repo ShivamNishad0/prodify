@@ -1,5 +1,5 @@
 import fs from "fs";
-import archiver from "archiver";
+import * as archiver from "archiver";
 import { NextResponse } from "next/server";
 
 // Ensure the runtime supports Node.js APIs

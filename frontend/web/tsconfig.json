@@ -30,8 +30,11 @@
       "@/redux/*": ["../packages/modules/hrms/src/redux/*"],
       "@/utils/*": ["../packages/modules/hrms/src/utils/*"],
       "@/pages/*": ["../packages/modules/hrms/src/pages/*"],
+      "@prodify/digit-ui-internals": ["../packages/micro-ui-internals/src/index"],
       "@prodify/digit-ui-internals/*": ["../packages/micro-ui-internals/src/*"],
+      "@prodify/digit-ui-module-crm": ["../packages/modules/crm/src/index"],
       "@prodify/digit-ui-module-crm/*": ["../packages/modules/crm/src/*"],
+      "@prodify/digit-ui-module-hrms": ["../packages/modules/hrms/src/index"],
       "@prodify/digit-ui-module-hrms/*": ["../packages/modules/hrms/src/*"]
     }
   },

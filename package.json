@@ -1,0 +1,21 @@
+{
+  "name": "crm-monorepo",
+  "version": "1.0.0",
+  "author": "Shivam Nishad",
+  "private": true,
+  "workspaces": [
+    "frontend/web",
+    "frontend/packages/*",
+    "microservices/*",
+    "website"
+  ],
+  "scripts": {
+    "start:microservices": "concurrently \"npm run dev -w api-gateway\" \"npm run dev -w auth-service\" \"npm run dev -w crm-core-service\" \"npm run dev -w communications-service\"",
+    "start:frontend": "npm run dev -w frontend",
+    "start:website": "npm run dev -w website",
+    "start:all": "concurrently \"npm run start:microservices\" \"npm run start:frontend\" \"npm run start:website\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

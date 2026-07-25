@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, customMenuItems }) => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const { user } = useAuth();
 
-    const baseMenuItems = customMenuItems || [
+    const baseMenuItems: Array<{ name: string; icon: React.ReactNode; path: string; hasDropdown?: boolean; subItems?: Array<{name: string; path: string}> }> = customMenuItems || [
         { name: "Dashboard", icon: <FaHome />, path: "/prodify/crm" },
         { name: "Inventory", icon: <FaBox />, path: "/prodify/crm/inventory" },
         { name: "Orders", icon: <FaShoppingCart />, path: "/prodify/crm/orders" },
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, customMenuItems }) => {
         { name: "Settings", icon: <FaCog />, path: "/prodify/crm/settings" },
     ];
 
-    const menuItems = (user?.role === 'admin' && !customMenuItems)
+    const menuItems: Array<{ name: string; icon: React.ReactNode; path: string; hasDropdown?: boolean; subItems?: Array<{name: string; path: string}> }> = (user?.role === 'admin' && !customMenuItems)
         ? [...baseMenuItems, { name: "Admin Panel", icon: <FaUserShield />, path: "/admin" }]
         : baseMenuItems;
 
