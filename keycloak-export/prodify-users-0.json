@@ -1,0 +1,55 @@
+{
+  "realm" : "prodify",
+  "users" : [ {
+    "id" : "52d19808-2bef-475f-8a4f-4a507dad1e23",
+    "username" : "prodify",
+    "firstName" : "Admin",
+    "lastName" : "System",
+    "email" : "admin@prodify.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1784964723757,
+    "totp" : true,
+    "credentials" : [ {
+      "id" : "5daf7793-0fe1-4a25-b5ed-4bc057b42f50",
+      "type" : "password",
+      "createdDate" : 1784964723884,
+      "secretData" : "{\"value\":\"ZAeYLQ7vWpzHq3ghnZoct2ziukYsr6yLZFdYB7+VPRg=\",\"salt\":\"9baFTuUjndX5F06dVyKQJA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    }, {
+      "id" : "cdcad591-cae1-4a70-94cf-bfa3a4ac12ef",
+      "type" : "otp",
+      "userLabel" : "Macbook",
+      "createdDate" : 1784965801591,
+      "secretData" : "{\"value\":\"kE0yAWiWwf5N8sKbzhx3\"}",
+      "credentialData" : "{\"subType\":\"totp\",\"digits\":6,\"counter\":0,\"period\":30,\"algorithm\":\"HmacSHA1\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-prodify" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "03c9667d-5feb-46be-b4df-b145fd770e48",
+    "username" : "shivam",
+    "firstName" : "shivam",
+    "lastName" : "nishad",
+    "email" : "shivam@prodify.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1784965997769,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "4ca8ee95-ca80-4c85-9223-54480e543b93",
+      "type" : "password",
+      "createdDate" : 1784965997881,
+      "secretData" : "{\"value\":\"7ndcqiTcuXO1Qb+208yKMqLbdRmxZ8HJWMbErgodwcE=\",\"salt\":\"IXchy67Qk+GFI7bseJNJYg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ "CONFIGURE_TOTP" ],
+    "realmRoles" : [ "default-roles-prodify" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
