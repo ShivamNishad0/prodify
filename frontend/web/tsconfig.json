@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/features/*": ["../packages/modules/crm/src/features/*"],
+      "@/layouts/*": ["../packages/micro-ui-internals/src/layouts/*"],
+      "@/providers/*": ["../packages/micro-ui-internals/src/providers/*"],
+      "@/shared/*": ["../packages/micro-ui-internals/src/shared/*"],
+      "@/core/*": ["../packages/micro-ui-internals/src/*"],
+      "@/components/*": ["../packages/modules/hrms/src/components/*"],
+      "@/context/*": ["../packages/modules/hrms/src/context/*"],
+      "@/redux/*": ["../packages/modules/hrms/src/redux/*"],
+      "@/utils/*": ["../packages/modules/hrms/src/utils/*"],
+      "@/pages/*": ["../packages/modules/hrms/src/pages/*"],
+      "@prodify/digit-ui-internals/*": ["../packages/micro-ui-internals/src/*"],
+      "@prodify/digit-ui-module-crm/*": ["../packages/modules/crm/src/*"],
+      "@prodify/digit-ui-module-hrms/*": ["../packages/modules/hrms/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

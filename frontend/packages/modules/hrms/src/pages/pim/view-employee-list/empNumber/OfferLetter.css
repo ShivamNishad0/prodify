@@ -1,0 +1,11 @@
+#\\:R1mfnnl9ufkqH2\\: {
+  /* For Internet Explorer */
+  -ms-overflow-style: none;
+  /* For Firefox */
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for element with ID :r7b: in WebKit browsers (e.g., Safari, Chrome) */
+#\\:r1mfnnl9ufkqh2\\::-webkit-scrollbar {
+  display: none;
+}

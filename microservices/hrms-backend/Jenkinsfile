@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = tool name: 'Maven 3.9.7', type: 'maven'
+        JAVA_HOME = tool name: 'JAVA', type: 'jdk'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Use Jenkins credential for PAT authentication
+                    withCredentials([string(credentialsId: 'GitPat', variable: 'GIT_PAT')]) {
+                        git url: "https://${GIT_PAT}@github.com/SurajSinghDevloper/New_hrms_for_sps.git", branch: 'master'
+                    }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    withEnv(["MAVEN_HOME=${MAVEN_HOME}", "JAVA_HOME=${JAVA_HOME}"]) {
+                        sh '${MAVEN_HOME}/bin/mvn clean install'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    withEnv(["MAVEN_HOME=${MAVEN_HOME}", "JAVA_HOME=${JAVA_HOME}"]) {
+                        sh '${MAVEN_HOME}/bin/mvn test'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh 'docker build -t hrms-app .'
+                    
+                    // Stop and remove any existing container with the same name
+                    sh 'docker stop hrms-app || true'
+                    sh 'docker rm hrms-app || true'
+                    
+                   // Run the container, mapping port 8181 to port 8181 and mounting the host directories
+                    sh '''
+                     docker run -d --name hrms-app \
+                      -p 8181:8181 \
+                      -v /home/ubuntu/backend_ws/prodResources/user/:/home/ubuntu/backend_ws/prodResources/user/ \
+                      -v /home/ubuntu/backend_ws/prodResources/staff/:/home/ubuntu/backend_ws/prodResources/staff/ \
+                      -v /home/ubuntu/backend_ws/prodResources/staff_doc/:/home/ubuntu/backend_ws/prodResources/staff_doc/ \
+                      -v /home/ubuntu/backend_ws/prodResources/other_doc/:/home/ubuntu/backend_ws/prodResources/other_doc/ \
+                      hrms-app
+                    '''
+
+                 }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded'
+            sh 'docker logs -f hrms-app &'
+        }
+        failure {
+            echo 'Pipeline failed'
+            sh 'docker logs -f hrms-app &'
+        }
+    }
+}

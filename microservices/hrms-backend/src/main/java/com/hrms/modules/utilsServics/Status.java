@@ -1,0 +1,12 @@
+package com.hrms.modules.utilsServics;
+
+public enum Status {
+ACTIVE,VERIFIED,TRUE,FALSE,INACTIVE,UNVERIFIED,
+REJECTED,
+APPROVED,
+CANCELLED,
+FIXED,
+PENDING_APPROVAL,
+SHEDULED,
+TAKEN
+}

@@ -52,3 +52,10 @@ postgres_data/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# --- Tools and Local Binaries ---
+keycloak-26.6.3/
+keycloak-export/
+.turbo/
+coverage/
+

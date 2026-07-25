@@ -50,6 +50,10 @@ Prodify CRM is divided into several interconnected modules that work together li
 - Internal messaging system between team members.
 - Real-time notifications for system events (e.g., new orders, low stock).
 
+### 8. HRMS (Human Resource Management System) - *Microservice*
+- Independent Spring Boot microservice running on port 8181.
+- Manages staff, attendance, and HR-related documents.
+
 ---
 
 ## 🚀 How to Run the Project
@@ -123,6 +127,15 @@ The frontend provides the user interface for the CRM.
    npm run dev
    ```
 6. Open your browser and navigate to the URL provided by Vite (usually `http://localhost:3000` or `http://localhost:5173`).
+
+### Step 5: Start the HRMS Microservice (Optional)
+The HRMS system runs as a standalone Spring Boot microservice connected to the `backupdb1` database.
+1. Open a fourth terminal window.
+2. Run the provided script to start it:
+   ```bash
+   ./scripts/run-hrms.sh
+   ```
+3. The HRMS API will be available on `http://localhost:8181`.
 
 ---
 

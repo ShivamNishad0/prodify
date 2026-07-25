@@ -1,0 +1,16 @@
+@media print {
+  .printable {
+    width: 590px !important;
+    height: 913px !important;
+    page-break-inside: avoid;
+    transform: scale(1); /* Apply scale to the entire printable area */
+  }
+
+  @page {
+    margin: 20px; /* Remove default margins */
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,88 @@
+/* @media print {
+  .idCard {
+    width: 5.3cm !important;
+    height: 8.5cm !important;
+    page-break-inside: avoid;
+  }
+
+  .name {
+    font-size: 10px;
+    line-height: 12px;
+    top: 58%;
+  }
+
+  .post {
+    font-size: 8px;
+    line-height: 10px;
+    top: 71.5%;
+  }
+
+  .details {
+    font-size: 9px;
+    line-height: 8px;
+  }
+
+  @page {
+    size: A4;
+    margin: 0.5cm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+.profileImage > img {
+  top: 0;
+  position: absolute;
+  height: fit-content;
+} */
+
+@media print {
+  .idCard {
+    height: 5.3cm !important;
+    width: 8.5cm !important;
+    page-break-inside: avoid;
+  }
+
+  .name {
+    font-size: 10px;
+    line-height: 10px;
+    top: 63.3%;
+    width: 50%;
+    position: absolute;
+    left: 53.1%;
+  }
+
+  .post {
+    font-size: 8px;
+    line-height: 10px;
+    top: 69.3%;
+    width: 50%;
+    position: absolute;
+    left: 53.1%;
+  }
+
+  .details {
+    line-height: 10px;
+    height: auto;
+    width: fit-content;
+    font-size: 8px;
+    line-height: 8px;
+  }
+
+  @page {
+    size: A4;
+    margin: 0.8cm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+  .profileImage > img {
+    top: 0;
+    position: absolute;
+    height: 42%;
+    height: fit-content;
+  }
+}

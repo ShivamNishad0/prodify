@@ -1,0 +1,83 @@
+// server.js (or index.js)
+
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
+const { connectDB } = require('./config/db');
+
+// --- 1. CONFIGURATION LOADING ---
+dotenv.config();
+
+// --- 2. EXPRESS INITIALIZATION ---
+const app = express();
+
+const PORT = 5003;
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/crm';
+
+// The frontend origins that are allowed access (including the reported 5173)
+const ALLOWED_ORIGINS = process.env.CORS_ORIGINS ? 
+                        process.env.CORS_ORIGINS.split(',') : 
+                        ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+
+
+// --- 3. KEYCLOAK CONFIGURATION ---
+// Initialize Keycloak if configured
+let keycloakMiddleware = null;
+let keycloakRoutes = null;
+
+if (process.env.KEYCLOAK_URL && process.env.KEYCLOAK_REALM) {
+  try {
+    const { keycloak, keycloakMiddleware: km } = require('./config/keycloak');
+    keycloakMiddleware = km;
+    keycloakRoutes = require('./routes/keycloakAuth');
+    console.log('Keycloak configuration loaded');
+  } catch (err) {
+    console.warn('Keycloak initialization failed:', err.message);
+  }
+}
+
+// Connection helper imported from config/db.js
+
+// --- 5. MIDDLEWARE ---
+app.use(cors({
+  origin: ALLOWED_ORIGINS, // Whitelist of frontend origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// B. Express JSON Parser
+app.use(express.json());
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Apply Keycloak middleware if configured
+if (keycloakMiddleware) {
+  keycloakMiddleware(app);
+}
+
+// --- 6. ROUTES ---
+app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/messages', require('./routes/messages'));
+app.use('/api/notes', require('./routes/notes'));
+app.use('/api/tasks', require('./routes/tasks'));
+
+// Keycloak authentication routes (if configured)
+if (keycloakRoutes) {
+  app.use('/api/keycloak', keycloakRoutes);
+}
+
+// Basic health check route
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'API is running', service: 'CRM Backend' });
+});
+
+
+// --- 7. SERVER STARTUP ---
+// Connect to DB, then start the server
+connectDB().then(() => {
+    app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+});

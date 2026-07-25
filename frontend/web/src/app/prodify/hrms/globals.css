@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+nav > header {
+  display: flex;
+  justify-content: center;
+}
+
+input[type="radio"] {
+  accent-color: #1895b0;
+}
+
+.btn {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: #1895b0;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.2rem;
+  border: 2px solid #1895b0;
+  cursor: pointer;
+  margin: 1rem;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #1895b0;
+  border: 2px solid #1895b0;
+}
+
+.action-btns {
+  padding-bottom: 1rem;
+}
+
+.cropped-img {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+}
+
+.aspect-ratios {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #000 inset !important; /* your bg color */
+  box-shadow: 0 0 0 1000px #000 inset !important;
+  -webkit-text-fill-color: #fff !important; /* your text color */
+  caret-color: #fff !important;
+}
+
+.slide-in {
+  transform: translateX(0);
+}
+
+.slide-out {
+  transform: translateX(-100%);
+}
+
+.slide-in-active {
+  transition: transform 1s ease;
+}
+
+.slide-out-active {
+  transition: transform 1s ease;
+}
