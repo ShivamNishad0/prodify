@@ -34,12 +34,7 @@ export const getDesgnData = async (setDesgn, pathName) => {
 
 export const getAllArea = async (setArea, pathName, setLocation) => {
   const zoneMapping = {
-    "head-office": "101",
-    "bijli": "202",
-    "rmc": "301",
-    "suda": "303",
-    "dmc": "404",
-    "bhilai": "601"
+    "head-office": "101"
   };
   const currentDept = pathName.split("/")[pathName.includes("/hrms") ? 3 : 1];
   const derivedZoneId = zoneMapping[currentDept] || "";
