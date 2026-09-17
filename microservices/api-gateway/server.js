@@ -30,7 +30,7 @@ app.use('/api/notes', createProxyMiddleware({ target: 'http://localhost:5003', c
 app.use('/api/tasks', createProxyMiddleware({ target: 'http://localhost:5003', changeOrigin: true }));
 
 // Proxy to HRMS Service (Port 8181)
-app.use('/api/hrms', createProxyMiddleware({ target: 'http://localhost:8181', changeOrigin: true, pathRewrite: { '^/api/hrms': '/api' } }));
+app.use('/api/hrms', createProxyMiddleware({ target: 'http://localhost:8181', changeOrigin: true, pathRewrite: { '^/api/hrms': '' } }));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Prodify API Gateway is running' });

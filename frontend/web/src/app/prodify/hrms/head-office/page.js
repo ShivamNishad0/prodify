@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [areas, setAreas] = useState([]);
 
   const areaList = useCallback(
-    () => getAllArea(setAreas, pathName, setAreas),
+    () => getAllArea(() => {}, pathName, setAreas),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -42,9 +42,10 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       const token = await getCookie("accessToken");
+      const currentDept = pathName.split("/")[pathName.includes("/hrms") ? 3 : 1];
       const response = await getData(
         `${baseUrl}/api/spshrm/${
-          baseZone[pathName.split("/")[1]]
+          baseZone[currentDept]
         }/staff/temp-api/all`,
         token
       );

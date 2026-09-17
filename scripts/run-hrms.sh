@@ -2,7 +2,7 @@
 # Script to run the HRMS Backend Microservice
 
 echo "Starting HRMS Backend Microservice on port 8181..."
-cd microservices/hrms-backend
+cd "$(dirname "$0")/../microservices/hrms-backend"
 
 # Ensure mvnw is executable
 chmod +x mvnw

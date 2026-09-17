@@ -65,13 +65,11 @@ export const getAllArea = async (setArea, pathName, setLocation) => {
         const locationData = [];
         const areaData = [];
 
-        // Add the "DETAILED" entry only when pathName.split("/")[pathName.includes("/hrms") ? 3 : 1] === "bijli"
-        if (pathName.split("/")[pathName.includes("/hrms") ? 3 : 1] === "bijli") {
-          locationData.push({
-            areaId: "a",
-            location: "DETAILED",
-          });
-        }
+        // Add the "DETAILED" entry so users can select hierarchical areas
+        locationData.push({
+          areaId: "a",
+          location: "DETAILED",
+        });
 
         responseData.forEach((ele) => {
           if (

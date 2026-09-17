@@ -51,8 +51,8 @@ export default function AddEmployee() {
     division: "",
     subDivision: "",
   });
-  const [area, setArea] = useState("");
-  const [location, setLocation] = useState("");
+  const [area, setArea] = useState([]);
+  const [location, setLocation] = useState([]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -107,7 +107,7 @@ export default function AddEmployee() {
     e.preventDefault();
     const newErrors = {};
     const zoneCookie = await getCookie("zone");
-    const currentZone = JSON.parse(zoneCookie);
+    const currentZone = zoneCookie ? JSON.parse(zoneCookie) : null;
 
     if (!formData.location) newErrors.location = "Location is required";
     if (formData.location === "a" && !selections?.subDivision)
@@ -378,10 +378,9 @@ export default function AddEmployee() {
                     }}
                   >
                     <SelectItem key={""}>--Select--</SelectItem>
-                    {location.length &&
-                      location?.map((ele) => (
+                    {location?.map((ele) => (
                         <SelectItem key={ele.areaId}>{ele.location}</SelectItem>
-                      ))}
+                    ))}
                   </Select>
                 </div>
 
@@ -398,7 +397,7 @@ export default function AddEmployee() {
                       onChange={handleSelectionChange}
                       bordered
                     >
-                      {area.length && getOptions(createNestedStructure(area))}
+                      {getOptions(createNestedStructure(area))}
                     </Select>
                     <Tooltip
                       isDisabled={!!selections.area}
@@ -416,10 +415,9 @@ export default function AddEmployee() {
                         onChange={handleSelectionChange}
                         disabled={!selections.area}
                       >
-                        {area.length &&
-                          getOptions(
-                            createNestedStructure(area)[selections?.area]
-                          )}
+                        {getOptions(
+                          createNestedStructure(area)[selections?.area]
+                        )}
                       </Select>
                     </Tooltip>
                     <Tooltip
@@ -438,12 +436,11 @@ export default function AddEmployee() {
                         onChange={handleSelectionChange}
                         disabled={!selections.circle}
                       >
-                        {area.length &&
-                          getOptions(
-                            createNestedStructure(area)[selections?.area]?.[
-                              selections?.circle
-                            ]
-                          )}
+                        {getOptions(
+                          createNestedStructure(area)[selections?.area]?.[
+                            selections?.circle
+                          ]
+                        )}
                       </Select>
                     </Tooltip>
                     <Tooltip
