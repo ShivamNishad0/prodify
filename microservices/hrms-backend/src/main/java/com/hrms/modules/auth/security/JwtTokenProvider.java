@@ -57,11 +57,15 @@ public class JwtTokenProvider {
 
     // validate JWT token
     public boolean validateToken(String token){
+        try {
             Jwts.parser()
                     .verifyWith((SecretKey) key())
                     .build()
                     .parse(token);
             return true;
-
+        } catch (Exception e) {
+            System.err.println("Invalid JWT token: " + e.getMessage());
+            return false;
+        }
     }
 }

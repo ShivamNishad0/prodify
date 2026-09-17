@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.Period;
 
-import com.hrms.modules.suda.hiring.models.SudaIDCard;
-import com.hrms.modules.suda.hiring.models.SudaStaff;
-import com.hrms.modules.suda.hiring.repository.SudaIDCardRepo;
-import com.hrms.modules.suda.hiring.repository.SudaStaffRepo;
+import com.hrms.modules.ho.hiring.models.HoIDCard;
+import com.hrms.modules.ho.hiring.models.HoStaff;
+import com.hrms.modules.ho.hiring.repository.HoIDCardRepo;
+import com.hrms.modules.ho.hiring.repository.HoStaffRepo;
 import java.time.LocalDate;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
@@ -15,20 +15,20 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class IDCardStatusUpdater {
 	@Autowired
-	private SudaIDCardRepo idCardRepo;
+	private HoIDCardRepo idCardRepo;
 	@Autowired
-	private SudaStaffRepo staffRepo;
+	private HoStaffRepo staffRepo;
 
 //	    @Scheduled(cron = "0 0 0 * * ?") 
 
 	public String updateIDCardStatus() {
 		LocalDate currentDate = LocalDate.now();
-		List<SudaIDCard> idCards = idCardRepo.findAll();
+		List<HoIDCard> idCards = idCardRepo.findAll();
 
 		if (idCards != null && !idCards.isEmpty()) {
-			for (SudaIDCard idCard : idCards) {
+			for (HoIDCard idCard : idCards) {
 				// Retrieve staff details
-				SudaStaff staff = staffRepo.findByEmpId(idCard.getEmpNo());
+				HoStaff staff = staffRepo.findByEmpId(idCard.getEmpNo());
 
 				// Check if character is verified
 				if (staff.getIsCharaterVerified() != Status.VERIFIED) {

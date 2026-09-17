@@ -1,6 +1,5 @@
 package com.hrms.modules.dtos;
 
-import com.hrms.modules.rmc.payroll.modles.RmcStaffSalaryDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

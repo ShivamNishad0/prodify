@@ -1,6 +1,5 @@
 package com.hrms.modules.dtos;
 
-import com.hrms.modules.rmc.payroll.modles.RmcAttendanceDeatils;
 import lombok.*;
 
 import java.util.List;

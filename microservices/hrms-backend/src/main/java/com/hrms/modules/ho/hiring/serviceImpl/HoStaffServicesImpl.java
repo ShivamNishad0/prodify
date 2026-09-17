@@ -1,7 +1,6 @@
 package com.hrms.modules.ho.hiring.serviceImpl;
 
 import com.hrms.modules.auth.service.UserServices;
-import com.hrms.modules.dmc.hiring.models.DmcStaff;
 import com.hrms.modules.dtos.*;
 import com.hrms.modules.ho.hiring.models.*;
 import com.hrms.modules.ho.hiring.repository.*;
